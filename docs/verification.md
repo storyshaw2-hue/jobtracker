@@ -24,6 +24,16 @@ An opaque-origin iframe harness also passed loading, filters, Perplexity request
 
 Native Chromium downloads do not retain Playwright-injected identity headers on retries. Local attachment QA therefore used a loopback-only gateway that injected the isolated QA identity server-side, matching the private platform proxy's authentication model. The gateway and all real-data QA artifacts are ignored by Git.
 
+## Hosted preview
+
+The deployed app was opened through the platform-issued private proxy in fresh browser contexts. Backend loading/reloading, filters, the current Perplexity profile, request preparation, native request/CSV downloads, a real source-link click and mobile layout passed.
+
+The hosted HTTPS app was also checked inside a sandboxed opaque-origin iframe. Local resume fingerprinting, filters, request preparation and native backup/request downloads passed with no page errors in the settled parent/child harness. The hosted fingerprint check used a synthetic file and was canceled without saving its descriptor.
+
+Hosted checks did not alter the viewer's saved profile or application workflow. Save/import mutations were tested only under a separately identified local QA workspace.
+
+The canonical Perplexity viewer showed an anti-automation interstitial in headless Chromium, so the app was tested through the deployment tool's issued private-preview URL instead. This is distinct from independently automating the surrounding Perplexity viewer interface.
+
 ## Boundaries
 
 The implementation preserves the original private seed's records, source text, scores and research dates. This verification is not a new job search or a claim that any imported posting is still available.
