@@ -1,0 +1,22 @@
+# Upload only the static-demo build inputs, never the private application.
+*
+!vercel.json
+!scripts
+scripts/*
+!scripts/build-demo.mjs
+!public-demo
+public-demo/*
+!public-demo/index.html
+!public-demo/app.js
+!public-demo/model.js
+!public-demo/demo.css
+!public
+public/*
+!public/styles.css
+!public/fonts
+public/fonts/*
+!public/fonts/Carlito-Regular.woff2
+!public/fonts/Carlito-Bold.woff2
+!public/licenses
+public/licenses/*
+!public/licenses/Carlito-OFL.txt

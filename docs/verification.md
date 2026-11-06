@@ -2,7 +2,7 @@
 
 ## Automated checks
 
-`npm run check`, `npm test`, `npm run build` and `npm run build:demo` pass. The 23 automated tests cover authentication, identity isolation, revision conflicts, authenticated attachments, nonmutating import previews, validation, profile versions, scoring evidence, exact CSV round trips, workflow preservation, stable-ID migration and fictional public-demo data/filter/export behavior.
+`npm run check`, `npm test`, `npm run build` and `npm run build:demo` pass. The 30 automated tests cover authentication, identity isolation, revision conflicts, authenticated attachments, nonmutating import previews, validation, profile versions, scoring evidence, exact CSV round trips, workflow preservation, stable-ID migration, expanded fictional-demo filters and the static-only Vercel configuration.
 
 CI runs the same checks against fictional fixtures. It also rejects private-data directories, databases, real document files and environment secrets in tracked files.
 
@@ -67,3 +67,15 @@ The user explicitly approved the separate fictional-data demo at [job-tracker-wo
 - **Appearance:** Published desktop, 375px mobile and short-desktop screenshots were inspected. Mobile filters worked and the page had no horizontal overflow.
 
 This release is a sample-only website, not a customer-account, payment or durable-storage service. Future code changes require separate publication approval.
+
+## Expanded filters and Vercel preparation
+
+The static demo adds seven screening filters without changing the private app or its source records. Every screening value is explicitly fictional; unknown travel and interview counts remain distinct from zero.
+
+- **Filter matrix:** All 38 non-default select choices, removable chips and six quick filters passed browser checks. Combined conditions, contradictory filters and clear-all recovery passed.
+- **View consistency:** Filters apply to cards, table and pipeline. Favorites, all five stages, sample notes/actions, sorts, reset/cancel, guide, keyboard tabs and the GitHub link were rechecked.
+- **Exports:** A real CSV download passed under the configured CSP, including formula-leading quoted multiline notes and illustrative screening fields. Blocked-clipboard and manual-selection fallbacks passed.
+- **Responsive behavior:** Desktop, 375px mobile, short desktop and 640px reflow were checked, including a desktop/mobile/desktop round trip. Long hostile queries were escaped and did not cause horizontal overflow. Visible text measured at least 6.09:1 contrast, with 12–13.333px Calibri-first/Carlito typography.
+- **Privacy and security:** The exact eight-file build and deny-by-default ten-file Vercel source upload passed independent read-only security review with no BLOCK or WARN findings. The declared bundle contains no private application code, databases, documents, credentials, accounts or runtime dependencies.
+
+Local browser testing applied the configured Vercel response headers. No page errors, console errors, data-bearing requests or duplicate IDs were observed; this local header simulation is not a substitute for checking the actual Vercel response after deployment.

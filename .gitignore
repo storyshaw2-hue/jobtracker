@@ -18,3 +18,4 @@ qa/
 tests/.extracted-app.js
 playwright-report/
 test-results/
+.vercel

@@ -30,3 +30,15 @@ Future changes remain previews until publication is separately approved. The pub
 - No network requests carrying notes or profile fields, no cookies/browser storage and no personal-data files.
 - Desktop, 375px mobile, short desktop and 200% reflow. Calibri-first 9–10pt typography, dark navy reference treatment and readable text contrast.
 - No private seed, database, credentials, real employer/job IDs or resume contents in the demo build.
+
+## Expanded filtering
+
+- Open More filters on desktop, or Filters & views on mobile. Check disclosure labels and `aria-expanded` through open/close and resize cycles.
+- Exercise all 38 non-default choices across the ten select filters. Clearing a chip must restore its default control value and matching results.
+- Combine Remote with two interview steps or fewer; only the fictional marketing role matches.
+- Combine Senior and Part-time; show the empty state, then clear all filters.
+- Numeric travel/interview limits must exclude missing values. Not specified must select only missing values, never coerce them to zero.
+- Check that the same conditions apply to cards, table and pipeline. Opening a pipeline/table role returns to its expanded card.
+- Search new screening values, requirements and temporary notes. Render hostile or long query text as text, without script execution or horizontal overflow.
+- Preserve all existing workflow, reset, keyboard tabs, dialogs, exports and source-link behavior.
+- Deploy the Vercel version only to the independently authorized project. Keep the private tracker and existing pplx.app publication separate.

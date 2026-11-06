@@ -3,7 +3,9 @@ import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 const root=resolve(fileURLToPath(new URL("..",import.meta.url))),output=resolve(root,"dist/public-demo");
 await rm(output,{recursive:true,force:true});await mkdir(output,{recursive:true});
-await cp(resolve(root,"public-demo"),output,{recursive:true});
+for(const file of ["index.html","app.js","model.js","demo.css"]){
+  await cp(resolve(root,"public-demo",file),resolve(output,file));
+}
 await cp(resolve(root,"public/styles.css"),resolve(output,"workspace.css"));
 await cp(resolve(root,"public/fonts"),resolve(output,"fonts"),{recursive:true});
 await cp(resolve(root,"public/licenses"),resolve(output,"licenses"),{recursive:true});

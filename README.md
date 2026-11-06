@@ -58,7 +58,7 @@ That mode trusts the platform-supplied visitor identity. Never expose it on an u
 
 Use the Node server with HTTPS in front of it, `APP_MODE=standalone`, `HOST=0.0.0.0`, a configured `APP_BASIC_USER`, and a unique `APP_BASIC_PASSWORD` of at least 16 characters. Mount `.data` on persistent storage and maintain backups. The server refuses weak or missing authentication in standalone mode.
 
-The static UI alone is not a functional deployment: it requires the backend. This SQLite version is not intended for static GitHub Pages or stateless Vercel hosting without a separate durable backend.
+The private static UI alone is not a functional deployment: it requires the backend. This SQLite version is not intended for static GitHub Pages or stateless Vercel hosting without a separate durable backend. The separate fictional-data demo can be hosted statically, as described below.
 
 ## Development
 
@@ -77,6 +77,8 @@ Carlito font files are distributed under the included SIL Open Font License.
 
 `public-demo/` is a separate static, fictional-data demonstration for people across professions. It borrows the supplied reference's navy header, separate summary tiles, company-first numbered cards and badges, while preserving compact dark-mode typography.
 
+The demo includes career, workplace and minimum-salary filters plus seven additional filters: experience level, job type, industry, sample location scope, business travel, sample interview steps and application status. Filters combine with AND logic across cards, table and pipeline; each active filter has a removable chip. Unknown travel or interview values do not qualify for numeric limits, and sample interview steps do not predict turnaround or hiring outcomes.
+
 ```sh
 npm run build:demo
 serve dist/public-demo -l 5003 --no-clipboard
@@ -87,3 +89,9 @@ Only `dist/public-demo` is the published sample bundle. It contains no private s
 The approved demo was published at [job-tracker-workspace.pplx.app](https://job-tracker-workspace.pplx.app) on November 6, 2026, and checked on the live origin in a fresh browser context. The private tracker remains a separate authenticated preview, and no custom domain was purchased.
 
 Building or editing the demo does not publish a new revision. Future publication requires fresh approval for the changed version.
+
+### Vercel setup
+
+`vercel.json` builds only the static demo using Node's built-in modules and serves `dist/public-demo`. No package installation, private server, database or environment secrets are needed. `.vercelignore` is deny-by-default and allows only the exact static build inputs, while local project associations stay out of Git.
+
+Use a separate project named `job-tracker-workspace`, not another product's existing project. The deployment and verification checklist is in [docs/vercel.md](docs/vercel.md).

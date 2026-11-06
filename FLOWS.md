@@ -72,3 +72,18 @@
 - Match the separate summary tiles, navy header, company-first numbered cards, rounded badges and priority corner labels.
 - Preserve dark mode, compact Calibri-first text, accessible controls and all existing profile/import/workflow behavior.
 - Prepare a separate profession-neutral, fictional-data demo. Do not publish it, purchase a domain or expose personal tracker records without approval.
+
+## Expanded demo filters and Vercel delivery
+
+- Open the existing public demo before editing; confirm six sample roles, career/workplace/pay filters, cards/table, pipeline and exports.
+- Add experience level, employment type, industry, sample location scope, business-travel cap, illustrative interview-step cap and application-stage filters.
+- Combine filters with AND logic across cards, table and pipeline. Unknown travel/interview values must not qualify for numeric caps.
+- Show every active filter, including text search, as a removable chip. Clear filters and empty-state recovery must reset every filter.
+- Keep extra filters behind a labeled disclosure. Check open/close state, keyboard access and desktop/mobile/desktop resizing.
+- Preserve stages, favorites, sample notes/actions, reset/cancel, reload-reset behavior, guide, CSV download/copy fallback and the GitHub link.
+- Keep all new values explicitly fictional; interview-step counts are not hiring-time or offer guarantees.
+- Build a static-only Vercel bundle. Exclude private seeds, databases, resumes, notes, the private API and local project credentials.
+- Check the actual Vercel account/project association before any linking. Reuse only the intended jobtracker project, never ACED.
+- The user clarified approval for a new job-tracker-workspace project in the existing workspace. Never reuse or modify aced-vercel, acedhq.com or the ACED repository.
+- After deployment, open the returned Vercel URL in a fresh browser context and recheck filters, one workflow and CSV download.
+- Leave the existing pplx.app publication unchanged unless its updated publication is separately approved.
