@@ -1,6 +1,8 @@
 # Job Tracker
 
-A private job-search workspace with an explicit Perplexity refresh handoff. This is the independent `storyshaw2-hue/jobtracker` project, not the ACED repository.
+A job-search workspace with a private personal tracker, an explicit Perplexity refresh handoff and a separate profession-neutral demonstration. This is the independent `storyshaw2-hue/jobtracker` project, not the ACED repository.
+
+Try the [Job Tracker Workspace sample demo](https://job-tracker-workspace.pplx.app). It uses fictional roles, resets edits on reload and does not expose private tracker records.
 
 ## Privacy boundary
 
@@ -80,6 +82,8 @@ npm run build:demo
 serve dist/public-demo -l 5003 --no-clipboard
 ```
 
-Only `dist/public-demo` is a candidate public bundle. It contains no private seed, database, actual resume, personal notes, backend, account system or billing. Sample edits live in page memory, reset on reload and can be exported as escaped CSV. This is not a production multi-customer service.
+Only `dist/public-demo` is the published sample bundle. It contains no private seed, database, actual resume, personal notes, backend, account system or billing. Sample edits live in page memory, reset on reload and can be exported as escaped CSV. This is not a production multi-customer service.
 
-The demo is prepared for review, not automatically published. A permanent address requires explicit approval; no domain purchase or public release is authorized by building it.
+The approved demo was published at [job-tracker-workspace.pplx.app](https://job-tracker-workspace.pplx.app) on November 6, 2026, and checked on the live origin in a fresh browser context. The private tracker remains a separate authenticated preview, and no custom domain was purchased.
+
+Building or editing the demo does not publish a new revision. Future publication requires fresh approval for the changed version.

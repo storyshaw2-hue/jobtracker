@@ -52,6 +52,18 @@ The private app's filters, resume tracks, seven sorts, cards/table, details, all
 
 The separate public-demo candidate covers six fictional professions. Browser checks exercised all quick filters, career/workplace/pay/text filtering, empty recovery, sorting, cards/table, details, favorites, stage changes, pipeline, sample notes/actions, reset/cancel, reload-reset behavior, CSV download/copy fallback and the real GitHub link. No data-bearing network requests were observed.
 
-An independent pre-publication security review found no BLOCK or WARN findings in the static-only candidate. This does not authorize publication or certify a future commercial service; public release still needs user approval.
+An independent pre-publication security review found no BLOCK or WARN findings in the static-only candidate at revision `6e0dcff`. The review covered that payload, not the hosting infrastructure or a future commercial service; the separate publication approval and live checks are recorded below.
 
-The revised desktop states had no duplicate element/test IDs or text-contrast failures; the measured minimum was 6.09:1. Both versions were checked at 375px and a short desktop height, with visible dialogs and accessible sample notes. An opaque demo harness passed filtering and Blob CSV download with the platform's permissive asset-CORS behavior mirrored locally; this is not a claim that a public site has already been published or tested.
+The revised desktop states had no duplicate element/test IDs or text-contrast failures; the measured minimum was 6.09:1. Both versions were checked at 375px and a short desktop height, with visible dialogs and accessible sample notes. An opaque demo harness passed filtering and Blob CSV download with the platform's permissive asset-CORS behavior mirrored locally; that development harness is distinct from the hosted checks below.
+
+## Published sample demo
+
+The user explicitly approved the separate fictional-data demo at [job-tracker-workspace.pplx.app](https://job-tracker-workspace.pplx.app) on November 6, 2026. The reviewed runtime payload at revision `6e0dcff` was published without changes, with Public visibility; the private tracker and its data were not included.
+
+- **Hosted preview:** Fresh normal and opaque-origin contexts loaded the actual hosted module bundle, filtered sample roles and downloaded CSV through real browser controls.
+- **Published origin:** A fresh, unauthenticated Chromium context loaded all six sample roles. Quick filters, all six career fields, workplace/pay filters, empty recovery, sorting, cards/table, details, stages and pipeline passed.
+- **Session-only workflow:** Sample notes, reset/cancel and reload-reset behavior passed. The live page prominently warns that edits reset on reload and personal information must not be entered.
+- **Downloads and links:** Actual CSV download, blocked-clipboard fallback, guide dialogs and a real GitHub source-link click passed. No page errors or data-bearing write requests were observed.
+- **Appearance:** Published desktop, 375px mobile and short-desktop screenshots were inspected. Mobile filters worked and the page had no horizontal overflow.
+
+This release is a sample-only website, not a customer-account, payment or durable-storage service. Future code changes require separate publication approval.
