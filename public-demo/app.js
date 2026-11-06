@@ -120,7 +120,7 @@ function updateDisclosureLabel() {
   ).length;
   const open = !$("demoAdvancedFilters").hidden;
   $("demoMoreFilters").textContent =
-    `${open ? "Hide extra filters" : "More filters (7)"}${extra ? ` · ${extra} active` : ""}`;
+    `${open ? "Hide extra filters" : "More filters"}${extra ? ` · ${extra} active` : ""}`;
 }
 function setExtraFilters(open) {
   $("demoAdvancedFilters").hidden = !open;
@@ -135,7 +135,7 @@ function render() {
     ["Remote", jobs.filter((j) => j.workplace === "Remote").length, "remote"],
     ["Review first", jobs.filter((j) => j.priority).length, "priority"],
     [
-      "My pipeline",
+      "Active applications",
       jobs.filter((j) => ["Applied", "Interviewing", "Offer"].includes(j.stage))
         .length,
       "pipeline",
