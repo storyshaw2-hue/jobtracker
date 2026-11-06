@@ -1,0 +1,21 @@
+{
+  "name": "jobtracker",
+  "version": "3.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Private job-search workspace with a Perplexity refresh handoff.",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "start": "node src/server.mjs",
+    "dev": "node --watch src/server.mjs",
+    "build": "node scripts/build.mjs",
+    "check": "node --check src/server.mjs && node --check src/domain.mjs && node --check public/app.js",
+    "test": "node --test tests/*.test.mjs"
+  },
+  "dependencies": {
+    "ajv": "^8.17.1",
+    "ajv-formats": "^3.0.1",
+    "better-sqlite3": "^11.10.0",
+    "express": "^4.21.2"
+  }
+}

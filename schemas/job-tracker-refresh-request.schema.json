@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:job-workspace:perplexity-request",
+  "title": "Perplexity Job Tracker Refresh Request",
+  "type": "object",
+  "required": ["schemaVersion", "action", "requestedAt", "basedOnSnapshot", "profile", "resumeHandling", "priorWorkflow", "agentRequirements", "outputContract"],
+  "properties": {
+    "schemaVersion": {"const": "2.0"},
+    "provider": {"const": "Perplexity"},
+    "priorSnapshot": {"type": "object"},
+    "retainedHistory": {"type": "object"},
+    "outputSchema": {"type": "object"},
+    "action": {"const": "refresh_job_tracker"},
+    "requestedAt": {"type": "string"},
+    "basedOnSnapshot": {"type": "object", "required": ["generated", "activeCount", "hiddenCount"], "properties": {"generated": {"type": "string", "format": "date"}, "activeCount": {"type": "integer", "minimum": 0}, "hiddenCount": {"type": "integer", "minimum": 0}}, "additionalProperties": false},
+    "profile": {"type": "object"},
+    "resumeHandling": {"type": "object", "required": ["descriptors", "instruction", "contentsIncluded"], "properties": {"descriptors": {"type": "array"}, "instruction": {"type": "string"}, "contentsIncluded": {"const": false}}, "additionalProperties": false},
+    "priorWorkflow": {"type": "array", "items": {"type": "object", "required": ["jobId"], "properties": {"jobId": {"type": "string"}}, "additionalProperties": true}},
+    "agentRequirements": {"type": "object", "required": ["searchAllConfiguredSources", "preferEmployerPosting", "verifyDirectUrlAndAvailability", "deduplicateBy", "preserveWorkflowByJobId", "archiveOnlyAfterRecheck", "recordExclusionReason", "separateEmployerPayFromEstimate", "scoreAgainstAssignedResume", "returnStructuredChecklist", "neverSilentlyRescoreOldSnapshot"], "additionalProperties": true},
+    "outputContract": {"type": "string"}
+  },
+  "additionalProperties": false
+}

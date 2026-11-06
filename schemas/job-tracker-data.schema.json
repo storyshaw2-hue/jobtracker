@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:job-workspace:snapshot",
+  "title": "Job Tracker Snapshot",
+  "type": "object",
+  "required": ["schema_version", "generated", "summary", "counts", "profile", "leads", "hidden", "archived", "research", "sources"],
+  "properties": {
+    "schema_version": {"const": "2.0"},
+    "generated": {"type": "string", "format": "date"},
+    "run_status": {"enum": ["complete", "partial"]},
+    "generator": {"enum": ["Perplexity", "Demo"]},
+    "summary": {"type": "string"},
+    "counts": {"type": "object", "additionalProperties": {"type": "integer", "minimum": 0}},
+    "profile": {"$ref": "#/$defs/profile"},
+    "leads": {"type": "array", "items": {"$ref": "#/$defs/job"}},
+    "hidden": {"type": "array", "items": {"$ref": "#/$defs/hiddenJob"}},
+    "archived": {"type": "array", "items": {"$ref": "#/$defs/archivedJob"}},
+    "research": {"type": "array", "items": {"type": "string"}},
+    "sources": {"$ref": "#/$defs/sources"},
+    "id_migrations": {"type": "array", "items": {"type": "object", "required": ["old_job_id", "new_job_id", "reason"], "properties": {"old_job_id": {"type": "string"}, "new_job_id": {"type": "string"}, "reason": {"type": "string"}}, "additionalProperties": false}}
+  },
+  "$defs": {
+    "profile": {
+      "type": "object",
+      "required": ["version", "name", "location", "remotePolicy", "salaryFloor", "maxTravelPercent", "postedWithinDays", "minimumScore", "staleAfterDays", "targetTitles", "sources", "weights", "resumes"],
+      "properties": {
+        "schemaVersion": {"type": "string"}, "version": {"type": "string"}, "name": {"type": "string", "minLength": 1}, "location": {"type": "string", "minLength": 1},
+        "projectPlatform": {"const": "Perplexity"}, "experienceContext": {"type": "string", "maxLength": 4000},
+        "remotePolicy": {"enum": ["fully_remote", "remote_or_hybrid", "any"]}, "salaryFloor": {"type": "number", "minimum": 0}, "maxTravelPercent": {"type": "number", "minimum": 0, "maximum": 100},
+        "postedWithinDays": {"type": "integer", "minimum": 1, "maximum": 90}, "minimumScore": {"type": "number", "minimum": 0, "maximum": 100}, "staleAfterDays": {"type": "integer", "minimum": 1, "maximum": 90},
+        "targetTitles": {"type": "array", "minItems": 1, "items": {"type": "string"}}, "sources": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+        "weights": {"type": "object", "required": ["track", "remote", "seniority", "duties", "qualifications", "salary", "recency", "stability"], "additionalProperties": {"type": "number", "minimum": 0, "maximum": 100}},
+        "resumes": {"type": "array", "items": {"$ref": "#/$defs/resume"}}
+      }, "additionalProperties": true
+    },
+    "resume": {"type": "object", "required": ["id", "alias", "track", "contentStored"], "properties": {"id": {"type": "string"}, "alias": {"type": "string"}, "fileName": {"type": ["string", "null"]}, "track": {"enum": ["Accounting", "Audit / SOX", "General"]}, "size": {"type": ["integer", "null"], "minimum": 0}, "mimeType": {"type": ["string", "null"]}, "lastModified": {"type": ["string", "null"]}, "sha256": {"type": ["string", "null"], "pattern": "^[a-f0-9]{64}$"}, "contentStored": {"const": false}}, "additionalProperties": true},
+    "workflow": {"type": "object", "properties": {"status": {"enum": ["Not applied", "Interested", "Applied", "Interviewing", "Offer", "Rejected", "Archived"]}, "favorite": {"type": "boolean"}, "nextAction": {"type": "string"}, "nextActionDate": {"type": ["string", "null"], "format": "date"}, "contact": {"type": "string"}, "appliedAt": {"type": ["string", "null"], "format": "date"}, "notes": {"type": "string"}}, "additionalProperties": false},
+    "job": {
+      "type": "object",
+      "required": ["job_id", "company", "role", "category", "workplace", "travel", "resume", "pay", "pay_min", "date_posted", "chance", "urgency", "fit", "score", "url", "source", "verification", "status"],
+      "properties": {
+        "job_id": {"type": "string", "minLength": 1}, "company": {"type": "string", "minLength": 1}, "role": {"type": "string", "minLength": 1}, "category": {"type": "string"}, "workplace": {"type": "string"}, "travel": {"type": "string"}, "resume": {"type": "string"},
+        "pay": {"type": "string"}, "pay_min": {"type": "number", "minimum": 0}, "date_posted": {"type": "string", "format": "date"}, "chance": {"enum": ["High", "Medium", "Low", "Unverified"]}, "urgency": {"enum": ["High", "Medium", "Low", "Unverified"]}, "fit": {"enum": ["Strong match", "Good match", "Stretch", "Needs review"]}, "score": {"type": "number", "minimum": 0, "maximum": 100},
+        "url": {"type": "string", "pattern": "^https?://"}, "source": {"type": "string"}, "verification": {"type": "string"}, "status": {"enum": ["Not applied", "Interested", "Applied", "Interviewing", "Offer", "Rejected", "Archived"]},
+        "first_seen_at": {"type": "string"}, "last_seen_at": {"type": "string"}, "verified_at": {"type": "string"}, "verification_status": {"enum": ["active", "closed", "unknown", "blocked"]},
+        "score_components": {"type": "array", "items": {"type": "object", "required": ["component", "points_awarded", "points_possible", "evidence"], "properties": {"component": {"type": "string"}, "points_awarded": {"type": "number"}, "points_possible": {"type": "number"}, "evidence": {"type": "string"}}, "additionalProperties": false}},
+        "workflow": {"$ref": "#/$defs/workflow"}
+      }, "additionalProperties": true
+    },
+    "hiddenJob": {"type": "object", "required": ["job_id", "company", "role", "hidden_because", "workplace", "pay", "date_posted", "category", "status", "source"], "properties": {"job_id": {"type": "string", "minLength": 1}, "company": {"type": "string", "minLength": 1}, "role": {"type": "string", "minLength": 1}, "hidden_because": {"type": "string", "minLength": 1}, "workplace": {"type": "string"}, "pay": {"type": "string"}, "date_posted": {"type": "string", "format": "date"}, "category": {"type": "string"}, "status": {"enum": ["Not applied", "Interested", "Applied", "Interviewing", "Offer", "Rejected", "Archived"]}, "source": {"type": "string"}, "url": {"anyOf": [{"type": "string", "pattern": "^https?://"}, {"const": "Not stated"}]}, "verification_status": {"enum": ["active", "closed", "unknown", "blocked"]}, "verified_at": {"type": "string"}}, "additionalProperties": true},
+    "archivedJob": {"type": "object", "required": ["job_id", "company", "role", "reason", "checked", "status"], "properties": {"job_id": {"type": "string"}, "company": {"type": "string"}, "role": {"type": "string"}, "reason": {"type": "string"}, "checked": {"type": "string"}, "status": {"type": "string"}, "url": {"type": "string"}}, "additionalProperties": true},
+    "sources": {"type": "object", "required": ["searched", "unavailable", "groups", "rubric", "labels", "chance", "urgency", "filters"], "properties": {"searched": {"type": "array", "items": {"type": "string"}}, "unavailable": {"type": "array", "items": {"type": "string"}}, "groups": {"type": "array", "items": {"type": "string"}}, "rubric": {"type": "array", "items": {"type": "string"}}, "labels": {"type": "array", "items": {"type": "string"}}, "chance": {"type": "array", "items": {"type": "string"}}, "urgency": {"type": "array", "items": {"type": "string"}}, "filters": {"type": "array", "items": {"type": "string"}}}, "additionalProperties": true}
+  },
+  "additionalProperties": true
+}

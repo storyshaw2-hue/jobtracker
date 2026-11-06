@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta name="description" content="A private job-search workspace with portable backups and an explicit Perplexity research handoff.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%2317355f'/%3E%3Cpath d='M18 20h28v28H18zM24 14h16v8H24z' fill='none' stroke='white' stroke-width='5'/%3E%3Cpath d='m24 34 5 5 11-12' fill='none' stroke='%238ed0ae' stroke-width='5'/%3E%3C/svg%3E">
+  <title>Job workspace | Perplexity</title>
+  <link rel="stylesheet" href="./styles.css">
+  <script type="module" src="./app.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#workspace">Skip to workspace</a>
+  <header class="top">
+    <div class="shell topbar">
+      <div class="identity"><strong>Job workspace</strong><span class="muted">/</span><span>Perplexity</span><span class="private-label">Private data</span></div>
+      <div class="save-group"><span id="saveStatus" role="status" aria-live="polite">Connecting</span><button id="reloadBtn" type="button" class="quiet">Load latest</button></div>
+    </div>
+    <div class="shell heading-row">
+      <div><div class="eyebrow">Research, then act</div><h1 id="trackerTitle">Your job-search workspace</h1><p id="summary" class="muted">Dated research, the right resume and a clear next action.</p></div>
+      <div class="topactions">
+        <button id="settingsBtn" type="button">Search profile &amp; resumes</button>
+        <button id="refreshBtn" type="button" class="primary">Prepare Perplexity refresh</button>
+        <button id="importBtn" type="button">Import results / backup</button>
+        <button id="exportMenuBtn" type="button">Export</button>
+      </div>
+    </div>
+  </header>
+
+  <main id="workspace" class="shell" tabindex="-1">
+    <section id="loadState" class="box loading" role="status">Loading your private workspace…</section>
+    <section id="loadFailure" class="box" hidden role="alert"><h2>Workspace unavailable</h2><p id="loadError"></p><button type="button" id="retryLoad">Try again</button></section>
+    <section id="saveFailure" class="notice error" hidden role="alert">
+      <div><strong>Your draft has not been saved</strong><p id="saveError"></p></div>
+      <div class="inlineactions"><button type="button" id="retrySave">Retry save</button><button type="button" data-export="state">Export draft</button></div>
+    </section>
+    <div id="appContent" hidden>
+      <div id="snapshotMeta" class="snapshot"></div>
+      <div id="demoNotice" class="notice" hidden><strong>Demonstration data only</strong><p>These fictional records are not job opportunities. Import your own research snapshot to start.</p></div>
+      <div id="dirtyNotice" class="notice" hidden><div><strong>Profile updated for the next search</strong><p>Scores stay unchanged until you import refreshed results.</p></div></div>
+      <div class="research-boundary"><span id="freshnessNote"></span><span>Fit and legacy readiness labels are not interview or offer probabilities.</span></div>
+      <section id="kpis" class="kpis" aria-label="Workspace shortcuts"></section>
+      <section class="toolbar" aria-label="Search and filters">
+        <div class="toolrow">
+          <input id="search" type="search" placeholder="Company, role, source ID, gaps or notes" aria-label="Search jobs">
+          <button type="button" id="filterOptionsBtn" aria-controls="secondaryFilters" aria-expanded="false">Filters &amp; views</button>
+          <div id="secondaryFilters" class="secondary-filters">
+          <select id="resumeFilter" aria-label="Filter by resume"><option value="">All resumes</option></select>
+          <select id="sort" aria-label="Sort jobs">
+            <option value="score">Highest imported fit</option><option value="chance">Readiness label</option>
+            <option value="urgency">Priority label</option><option value="date">Newest posted</option>
+            <option value="pay">Highest posted minimum</option><option value="company">Company A–Z</option>
+            <option value="nextAction">Next action date</option>
+          </select>
+          <button type="button" id="viewToggle">Table view</button><button type="button" id="clearFilters">Clear filters</button>
+          </div>
+        </div>
+        <div id="chips" class="chips" aria-label="Quick filters"></div>
+      </section>
+      <nav class="tabs" role="tablist" aria-label="Tracker sections">
+        <button type="button" id="activeTab" role="tab" aria-selected="true" aria-controls="activePanel" data-tab="active">Snapshot leads</button>
+        <button type="button" id="pipelineTab" role="tab" aria-selected="false" aria-controls="pipelinePanel" data-tab="pipeline">Pipeline</button>
+        <button type="button" id="hiddenTab" role="tab" aria-selected="false" aria-controls="hiddenPanel" data-tab="hidden">Hidden by rules</button>
+        <button type="button" id="archivedTab" role="tab" aria-selected="false" aria-controls="archivedPanel" data-tab="archived">Archived</button>
+        <button type="button" id="researchTab" role="tab" aria-selected="false" aria-controls="researchPanel" data-tab="research">Research</button>
+        <button type="button" id="methodTab" role="tab" aria-selected="false" aria-controls="methodPanel" data-tab="method">Sources &amp; method</button>
+      </nav>
+      <section id="activePanel" role="tabpanel" aria-labelledby="activeTab"><div class="resultline"><strong id="resultCount"></strong><span id="scoreWarning" class="muted"></span></div><div id="activeContent"></div></section>
+      <section id="pipelinePanel" role="tabpanel" aria-labelledby="pipelineTab" hidden><div id="pipelineContent"></div></section>
+      <section id="hiddenPanel" role="tabpanel" aria-labelledby="hiddenTab" hidden><div id="hiddenContent"></div></section>
+      <section id="archivedPanel" role="tabpanel" aria-labelledby="archivedTab" hidden><div id="archivedContent"></div></section>
+      <section id="researchPanel" role="tabpanel" aria-labelledby="researchTab" hidden><div id="researchContent"></div></section>
+      <section id="methodPanel" role="tabpanel" aria-labelledby="methodTab" hidden><div id="methodContent"></div></section>
+      <footer><p>Changes save to this private workspace. Export a backup before moving hosts or environments; this is not an independent managed cloud database.</p><p>No automatic job searches or applications. Resume contents stay outside this app.</p><a href="https://github.com/storyshaw2-hue/jobtracker" target="_blank" rel="noopener noreferrer">Source code</a></footer>
+    </div>
+  </main>
+
+  <dialog id="settingsDialog" aria-labelledby="settingsTitle">
+    <form id="settingsForm">
+      <div class="dialoghead"><div><div class="eyebrow">Inputs for the next research run</div><h2 id="settingsTitle">Search profile &amp; resumes</h2></div><button type="button" data-close="settingsDialog" aria-label="Close settings">Close</button></div>
+      <div class="dialogbody">
+        <p class="muted">Saving a changed profile creates a new version. Existing research remains dated and unchanged until you import refreshed results.</p>
+        <p id="profileError" class="error-text" hidden role="alert"></p>
+        <div class="formgrid">
+          <div class="field"><label for="profileName">Profile name</label><input id="profileName" required maxlength="160"></div>
+          <div class="field"><label for="location">Home location / eligibility</label><input id="location" required maxlength="300"></div>
+          <div class="field"><label for="remotePolicy">Workplace policy</label><select id="remotePolicy"><option value="fully_remote">Fully remote only</option><option value="remote_or_hybrid">Remote or hybrid</option><option value="any">Any workplace</option></select></div>
+          <div class="field"><label for="salaryFloor">Minimum posted annual base (USD)</label><input id="salaryFloor" type="number" min="0" max="10000000" step="1000" required></div>
+          <div class="field"><label for="maxTravel">Maximum stated travel (%)</label><input id="maxTravel" type="number" min="0" max="100" required></div>
+          <div class="field"><label for="postedDays">Posted within (days)</label><input id="postedDays" type="number" min="1" max="90" required></div>
+          <div class="field"><label for="minScore">Minimum fit score</label><input id="minScore" type="number" min="0" max="100" required></div>
+          <div class="field"><label for="staleDays">Recheck after (days)</label><input id="staleDays" type="number" min="1" max="90" required></div>
+          <div class="field full"><label for="targetTitles">Target titles, one per line</label><textarea id="targetTitles" rows="4" required></textarea></div>
+          <div class="field full"><label for="sources">Sources, one per line</label><textarea id="sources" rows="3" required></textarea></div>
+          <div class="field full"><label for="projectPlatform">Current project-building platform</label><input id="projectPlatform" value="Perplexity" readonly></div>
+          <div class="field full"><label for="experienceContext">Project-platform correction / context</label><textarea id="experienceContext" rows="4" maxlength="4000"></textarea><small>Included in Perplexity requests. This does not rewrite employer requirements or establish unlisted qualifications.</small></div>
+          <fieldset class="full"><legend>Scoring weights</legend><div id="weights" class="weights"></div><p id="weightTotal" role="status"></p></fieldset>
+        </div>
+        <section class="box resume-box"><h3>Resume descriptors</h3><p>Choose files to record names, aliases and local SHA-256 fingerprints. The files themselves are not uploaded to this app or saved here; attach the actual documents directly to Perplexity.</p><label class="file-label" for="resumeFiles">Add resume descriptors</label><input id="resumeFiles" type="file" accept=".pdf,.doc,.docx,.txt,.md" multiple><div id="resumeList"></div></section>
+      </div>
+      <div class="dialogfoot"><button type="button" id="resetProfile">Reset unsaved changes</button><button type="submit" id="saveProfile" class="primary">Save profile</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="refreshDialog" aria-labelledby="refreshTitle">
+    <div class="dialoghead"><div><div class="eyebrow">Explicit handoff, not an automatic search</div><h2 id="refreshTitle">Prepare Perplexity refresh</h2></div><button type="button" data-close="refreshDialog" aria-label="Close Perplexity refresh">Close</button></div>
+    <div class="dialogbody">
+      <ol class="steps"><li>Download the request JSON. It includes your profile, workflow, prior source URLs, full output contract and schema.</li><li>Attach that JSON and your actual resume files to Perplexity. Paste the instructions below.</li><li>Ask for the research snapshot as JSON, then use Import results to preview and merge it here.</li></ol>
+      <div class="notice"><strong>Actual resume documents are still required</strong><p id="refreshResumes">Descriptors and fingerprints are not resume contents. Missing files must be reported before scoring.</p></div>
+      <label for="refreshPrompt">Ready-to-paste Perplexity instructions</label><textarea id="refreshPrompt" rows="15" readonly></textarea>
+      <p id="refreshCopyStatus" class="muted" role="status"></p>
+      <p class="muted">The current builder is Perplexity, replacing the previous Copilot Studio attribution. No Copilot connector or API key is embedded in this app, and no message is sent automatically.</p>
+    </div>
+    <div class="dialogfoot"><button type="button" id="copyRefresh">Copy instructions</button><button type="button" class="primary" data-export="request">Download request JSON</button></div>
+  </dialog>
+
+  <dialog id="exportDialog" aria-labelledby="exportTitle">
+    <div class="dialoghead"><h2 id="exportTitle">Export your workspace</h2><button type="button" data-close="exportDialog" aria-label="Close exports">Close</button></div>
+    <div class="dialogbody"><p>Exports may include private notes, contacts and search parameters. Keep them private; actual resume contents are never included.</p>
+      <div class="export-option"><div><h3>Portable backup</h3><p>Full snapshot, current profile and workflow, including unsaved drafts.</p></div><button type="button" data-export="state">Download backup JSON</button></div>
+      <div class="export-option"><div><h3>Perplexity refresh request</h3><p>Parameters, resume descriptors, prior research and the output contract.</p></div><button type="button" data-export="request">Download request JSON</button></div>
+      <div class="export-option"><div><h3>Spreadsheet</h3><p>All research sections and workflow, with reversible formula protection.</p></div><button type="button" data-export="csv">Download CSV</button></div>
+      <p id="exportStatus" role="status"></p>
+    </div>
+  </dialog>
+
+  <dialog id="importDialog" aria-labelledby="importTitle">
+    <div class="dialoghead"><h2 id="importTitle">Preview an import</h2><button type="button" data-close="importDialog" aria-label="Close import">Cancel</button></div>
+    <div class="dialogbody"><p id="importFilename"></p><p>Research snapshots replace the result data. Existing application workflow is preserved by stable ID, and tracked omitted jobs remain in history.</p>
+      <label class="check"><input type="checkbox" id="overwriteWorkflow">Use imported values for conflicting workflow fields</label>
+      <label class="check"><input type="checkbox" id="importProfile">Also import the file's search profile</label>
+      <div id="importPlan" class="box" role="status"></div><p id="importError" class="error-text" hidden role="alert"></p>
+    </div><div class="dialogfoot"><button type="button" data-close="importDialog">Cancel</button><button type="button" id="confirmImport" class="primary" disabled>Apply validated import</button></div>
+  </dialog>
+  <dialog id="copyDialog" aria-labelledby="copyTitle">
+    <div class="dialoghead"><h2 id="copyTitle">Copy text</h2><button type="button" data-close="copyDialog" aria-label="Close copy text">Close</button></div>
+    <div class="dialogbody"><label for="copyText">Selectable text</label><textarea id="copyText" rows="13" readonly></textarea><p id="copyStatus" role="status">Copy or select the text and press Ctrl/Cmd+C.</p></div><div class="dialogfoot"><button type="button" id="selectCopy">Select text</button><button type="button" id="copyAgain" class="primary">Copy</button></div>
+  </dialog>
+  <dialog id="reloadDialog" aria-labelledby="reloadTitle"><div class="dialoghead"><h2 id="reloadTitle">Load the saved version?</h2><button type="button" data-close="reloadDialog">Cancel</button></div><div class="dialogbody"><p>Loading the saved version replaces edits currently on this page. Export your draft first if you want to keep both versions.</p></div><div class="dialogfoot"><button type="button" data-export="state">Export draft</button><button type="button" id="confirmReload" class="primary">Load saved version</button></div></dialog>
+  <input type="file" id="importFile" accept=".json,.csv" hidden>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+</body>
+</html>

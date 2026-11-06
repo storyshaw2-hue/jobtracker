@@ -1,0 +1,61 @@
+{
+  "schema_version": "2.0",
+  "generator": "Demo",
+  "generated": "2026-11-06",
+  "run_status": "partial",
+  "summary": "Synthetic demonstration records only. These are not real employers or current job opportunities.",
+  "counts": { "All": 2 },
+  "profile": {
+    "schemaVersion": "1.0", "version": "1", "name": "Private job workspace",
+    "location": "Set your home location", "remotePolicy": "fully_remote",
+    "salaryFloor": 70000, "maxTravelPercent": 19, "postedWithinDays": 7,
+    "minimumScore": 50, "staleAfterDays": 7,
+    "targetTitles": ["Senior Accountant", "Internal Auditor"],
+    "sources": ["Employer ATS", "LinkedIn", "Indeed"],
+    "weights": { "track": 30, "remote": 20, "seniority": 15, "duties": 10, "qualifications": 10, "salary": 5, "recency": 5, "stability": 5 },
+    "resumes": [
+      { "id": "demo-accounting", "alias": "Senior Accountant resume", "track": "Accounting", "contentStored": false },
+      { "id": "demo-audit", "alias": "Internal Audit resume", "track": "Audit / SOX", "contentStored": false }
+    ]
+  },
+  "leads": [
+    {
+      "job_id": "demo-audit-1", "company": "Sample Employer A (fictional)", "role": "Internal Auditor",
+      "category": "Audit / SOX", "workplace": "Illustrative remote role; not a real vacancy", "travel": "Not verified",
+      "resume": "Internal Audit resume", "pay": "No real compensation data", "pay_min": 0,
+      "date_posted": "2026-11-06", "chance": "Unverified", "urgency": "Unverified", "fit": "Needs review",
+      "score": 0, "url": "https://example.com/demo-audit", "source": "Synthetic fixture", "verification": "Demo only",
+      "status": "Not applied", "verification_status": "unknown",
+      "duties": "Illustrative control testing and audit support.", "quals": "Use an actual resume and employer posting for real evaluation.",
+      "gaps": "No real candidate assessment has been performed.", "improve": "Import a verified research snapshot.",
+      "watch": "This is not an application opportunity.", "score_reasons": [], "checklist": [], "apply_first": "No"
+    },
+    {
+      "job_id": "demo-accounting-1", "company": "Sample Employer B (fictional)", "role": "Senior Accountant",
+      "category": "Accounting", "workplace": "Illustrative remote role; not a real vacancy", "travel": "Not verified",
+      "resume": "Senior Accountant resume", "pay": "No real compensation data", "pay_min": 0,
+      "date_posted": "2026-11-06", "chance": "Unverified", "urgency": "Unverified", "fit": "Needs review",
+      "score": 0, "url": "https://example.com/demo-accounting", "source": "Synthetic fixture", "verification": "Demo only",
+      "status": "Not applied", "verification_status": "unknown",
+      "duties": "Illustrative general-ledger and reconciliation work.", "quals": "No real requirements are represented.",
+      "gaps": "No real candidate assessment has been performed.", "improve": "Import a verified research snapshot.",
+      "watch": "This is not an application opportunity.", "score_reasons": [], "checklist": [], "apply_first": "No"
+    }
+  ],
+  "hidden": [
+    {
+      "job_id": "demo-hidden-1", "company": "Sample Employer C (fictional)", "role": "Example hybrid role",
+      "hidden_because": "Demonstrates an incompatible workplace rule.", "workplace": "Illustrative weekly office attendance",
+      "pay": "Not stated", "date_posted": "2026-11-06", "category": "Accounting", "status": "Not applied",
+      "source": "Synthetic fixture", "url": "https://example.com/demo-hidden", "verification_status": "unknown"
+    }
+  ],
+  "archived": [],
+  "research": ["The repository contains only fictional demo records. Real snapshots and workflow belong in the ignored .data folder or authenticated imports."],
+  "sources": {
+    "searched": [], "unavailable": ["No real search was performed for the demonstration data."],
+    "groups": [], "rubric": ["Scores are not probabilities."], "labels": [],
+    "chance": ["Legacy readiness categories are not calibrated interview or offer probabilities."],
+    "urgency": ["Only current, sourced process evidence supports a short-interview claim."], "filters": []
+  }
+}
