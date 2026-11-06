@@ -87,3 +87,4 @@
 - The user clarified approval for a new job-tracker-workspace project in the existing workspace. Never reuse or modify aced-vercel, acedhq.com or the ACED repository.
 - After deployment, open the returned Vercel URL in a fresh browser context and recheck filters, one workflow and CSV download.
 - Leave the existing pplx.app publication unchanged unless its updated publication is separately approved.
+- Vercel is linked to this GitHub repository with main as its production branch. Treat runtime pushes to main as production releases; keep unapproved iterations on a feature branch.

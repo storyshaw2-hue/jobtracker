@@ -2,7 +2,7 @@
 
 A job-search workspace with a private personal tracker, an explicit Perplexity refresh handoff and a separate profession-neutral demonstration. This is the independent `storyshaw2-hue/jobtracker` project, not the ACED repository.
 
-Try the [Job Tracker Workspace sample demo](https://job-tracker-workspace.pplx.app). It uses fictional roles, resets edits on reload and does not expose private tracker records.
+Try the [Job Tracker Workspace sample demo on Vercel](https://job-tracker-workspace.vercel.app). It uses fictional roles, resets edits on reload and does not expose private tracker records.
 
 ## Privacy boundary
 
@@ -86,7 +86,7 @@ serve dist/public-demo -l 5003 --no-clipboard
 
 Only `dist/public-demo` is the published sample bundle. It contains no private seed, database, actual resume, personal notes, backend, account system or billing. Sample edits live in page memory, reset on reload and can be exported as escaped CSV. This is not a production multi-customer service.
 
-The approved demo was published at [job-tracker-workspace.pplx.app](https://job-tracker-workspace.pplx.app) on November 6, 2026, and checked on the live origin in a fresh browser context. The private tracker remains a separate authenticated preview, and no custom domain was purchased.
+The expanded demo was deployed at [job-tracker-workspace.vercel.app](https://job-tracker-workspace.vercel.app) on November 6, 2026, and checked on the live origin in a fresh browser context. The earlier [pplx.app demo](https://job-tracker-workspace.pplx.app) remains unchanged; the private tracker remains a separate authenticated preview, and no custom domain was purchased.
 
 Building or editing the demo does not publish a new revision. Future publication requires fresh approval for the changed version.
 
@@ -95,3 +95,5 @@ Building or editing the demo does not publish a new revision. Future publication
 `vercel.json` builds only the static demo using Node's built-in modules and serves `dist/public-demo`. No package installation, private server, database or environment secrets are needed. `.vercelignore` is deny-by-default and allows only the exact static build inputs, while local project associations stay out of Git.
 
 Use a separate project named `job-tracker-workspace`, not another product's existing project. The deployment and verification checklist is in [docs/vercel.md](docs/vercel.md).
+
+The Vercel project is linked to this repository with `main` configured as its production branch, so pushes may trigger publication. Keep unapproved runtime changes on feature branches and treat a runtime push to `main` as a production release.

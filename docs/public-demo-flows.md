@@ -4,7 +4,7 @@
 
 This separate static demonstration uses only fictional roles across multiple professions. It does not replace the private tracker, contain the user's research, accept resume uploads, create accounts, take payments or permanently save data.
 
-The working product name is Job Tracker Workspace. The approved fictional-data demo was published at [job-tracker-workspace.pplx.app](https://job-tracker-workspace.pplx.app) on November 6, 2026, with Public visibility.
+The working product name is Job Tracker Workspace. The expanded, approved fictional-data demo is at [job-tracker-workspace.vercel.app](https://job-tracker-workspace.vercel.app); the earlier [pplx.app demo](https://job-tracker-workspace.pplx.app) remains a separate unchanged publication.
 
 Future changes remain previews until publication is separately approved. The public demo does not authorize publication of the private tracker.
 

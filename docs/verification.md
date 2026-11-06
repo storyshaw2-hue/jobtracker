@@ -79,3 +79,14 @@ The static demo adds seven screening filters without changing the private app or
 - **Privacy and security:** The exact eight-file build and deny-by-default ten-file Vercel source upload passed independent read-only security review with no BLOCK or WARN findings. The declared bundle contains no private application code, databases, documents, credentials, accounts or runtime dependencies.
 
 Local browser testing applied the configured Vercel response headers. No page errors, console errors, data-bearing requests or duplicate IDs were observed; this local header simulation is not a substitute for checking the actual Vercel response after deployment.
+
+## Vercel production verification
+
+The independently authorized `job-tracker-workspace` project was deployed at [job-tracker-workspace.vercel.app](https://job-tracker-workspace.vercel.app) from runtime revision `d7d3b5b`. A separate credentialed inspection confirmed production deployment `dpl_38uayPEirWwnjrzyEPmWJWvsABR8` was Ready; no existing ACED project, site or repository was deployed.
+
+- **Anonymous live checks:** All 38 filter choices, active-chip removal, quick filters, combined conditions, table/cards, favorites, stages, filtered pipeline, notes/actions, cancel/reset, guide and reload-reset behavior passed in a fresh browser context.
+- **Actual export:** Native CSV download passed on Vercel under its real CSP, including quoted multiline formula-leading text and screening metadata. Blocked-clipboard fallback passed.
+- **Appearance:** Live desktop, 375px mobile and short-desktop screenshots were inspected. Mobile filters and clear chips worked with no page-width overflow.
+- **Headers and isolation:** The live response returned the configured CSP, nosniff and DENY framing headers. Sensitive/private file and API probes returned 404, with no page errors, console errors or data-bearing app requests.
+- **Separate preview:** The updated Perplexity preview passed module loading, combined filters, workflow and real CSV downloads in normal and opaque-origin contexts. The earlier public pplx.app site was separately checked and remains unchanged.
+- **Version integrity:** All eight Vercel-served assets matched the reviewed local build byte-for-byte. The runtime revision's [GitHub CI check](https://github.com/storyshaw2-hue/jobtracker/actions/runs/42306959116) passed, and the live sort controls and GitHub link were also exercised.
