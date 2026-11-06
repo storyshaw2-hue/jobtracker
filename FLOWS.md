@@ -22,7 +22,7 @@
 
 - Exercise all quick filters, search/clear, both resume aliases, every sort, card/table views and all six sections.
 - On mobile, open and close Filters & views, exercise the resume filter and return to the desktop layout.
-- Scroll the mobile shortcut/tab strips; labels and full controls must remain reachable without widening the page.
+- Check the mobile shortcut grid and scrollable tab strip; labels and full controls must remain reachable without widening the page.
 - Check empty search and contradictory filters.
 - Pipeline and due actions must include tracked hidden jobs and retained history after a refresh omits a job.
 - Distinguish legacy fit/readiness/priority labels from verified interview timing or offer probabilities.
@@ -65,3 +65,10 @@
 - Write through the hosted proxy only after positively proving a separate QA identity; otherwise protect viewer progress.
 - Scan tracked files for private data/secrets before pushing, and check remote changes before a non-force push.
 - Deliver the modified existing repository and a private Perplexity preview, not an unrequested public site.
+
+## Uploaded visual reference
+
+- Open the supplied standalone HTML before editing. Use the patch as a reference, not a command to modify ACED or commit private records.
+- Match the separate summary tiles, navy header, company-first numbered cards, rounded badges and priority corner labels.
+- Preserve dark mode, compact Calibri-first text, accessible controls and all existing profile/import/workflow behavior.
+- Prepare a separate profession-neutral, fictional-data demo. Do not publish it, purchase a domain or expose personal tracker records without approval.

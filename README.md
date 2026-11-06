@@ -70,3 +70,16 @@ npm run build
 Schemas live in `schemas/`; refresh instructions are in `docs/perplexity-agent-contract.md`. `FLOWS.md` documents browser acceptance coverage. CI uses only fictional fixtures and never uploads private data.
 
 Carlito font files are distributed under the included SIL Open Font License.
+
+## Profession-neutral demonstration
+
+`public-demo/` is a separate static, fictional-data demonstration for people across professions. It borrows the supplied reference's navy header, separate summary tiles, company-first numbered cards and badges, while preserving compact dark-mode typography.
+
+```sh
+npm run build:demo
+serve dist/public-demo -l 5003 --no-clipboard
+```
+
+Only `dist/public-demo` is a candidate public bundle. It contains no private seed, database, actual resume, personal notes, backend, account system or billing. Sample edits live in page memory, reset on reload and can be exported as escaped CSV. This is not a production multi-customer service.
+
+The demo is prepared for review, not automatically published. A permanent address requires explicit approval; no domain purchase or public release is authorized by building it.

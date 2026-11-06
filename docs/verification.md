@@ -2,7 +2,7 @@
 
 ## Automated checks
 
-`npm run check`, `npm test` and `npm run build` pass. The 19 automated tests cover authentication, identity isolation, revision conflicts, authenticated attachments, nonmutating import previews, validation, profile versions, scoring evidence, exact CSV round trips, workflow preservation and stable-ID migration.
+`npm run check`, `npm test`, `npm run build` and `npm run build:demo` pass. The 23 automated tests cover authentication, identity isolation, revision conflicts, authenticated attachments, nonmutating import previews, validation, profile versions, scoring evidence, exact CSV round trips, workflow preservation, stable-ID migration and fictional public-demo data/filter/export behavior.
 
 CI runs the same checks against fictional fixtures. It also rejects private-data directories, databases, real document files and environment secrets in tracked files.
 
@@ -41,3 +41,17 @@ The implementation preserves the original private seed's records, source text, s
 Real snapshots, resumes, contacts, notes, databases and screenshots are not part of the public repository or static deployment. Testing used isolated QA identities, and temporary QA changes were restored without altering another viewer's workflow.
 
 SQLite persistence survives server restarts in this environment, not migration to another host by itself. Export a portable backup before changing environments.
+
+## Reference-led visual revision
+
+The newly supplied standalone HTML was opened before editing. Its patch repeats the earlier upgrade and contains private records and stale integration instructions, so it was not applied wholesale to the public repository.
+
+The revised interface uses the reference's navy header, separate shortcut tiles, numbered company-first cards, pill badges and priority corner labels. Dark mode and approximately 9–10pt Calibri-first typography remain in place. Source records, scores, research dates, profile metadata and server-side workflow semantics were not rewritten by the visual change.
+
+The private app's filters, resume tracks, seven sorts, cards/table, details, all sections, profile no-op/validation, save/reload, exports and Perplexity handoff were rechecked under an isolated QA identity. Temporary QA workflow edits were restored.
+
+The separate public-demo candidate covers six fictional professions. Browser checks exercised all quick filters, career/workplace/pay/text filtering, empty recovery, sorting, cards/table, details, favorites, stage changes, pipeline, sample notes/actions, reset/cancel, reload-reset behavior, CSV download/copy fallback and the real GitHub link. No data-bearing network requests were observed.
+
+An independent pre-publication security review found no BLOCK or WARN findings in the static-only candidate. This does not authorize publication or certify a future commercial service; public release still needs user approval.
+
+The revised desktop states had no duplicate element/test IDs or text-contrast failures; the measured minimum was 6.09:1. Both versions were checked at 375px and a short desktop height, with visible dialogs and accessible sample notes. An opaque demo harness passed filtering and Blob CSV download with the platform's permissive asset-CORS behavior mirrored locally; this is not a claim that a public site has already been published or tested.

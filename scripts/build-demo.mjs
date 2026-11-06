@@ -1,0 +1,11 @@
+import { cp, mkdir, rm, readdir } from "node:fs/promises";
+import { resolve } from "node:path";
+import { fileURLToPath } from "node:url";
+const root=resolve(fileURLToPath(new URL("..",import.meta.url))),output=resolve(root,"dist/public-demo");
+await rm(output,{recursive:true,force:true});await mkdir(output,{recursive:true});
+await cp(resolve(root,"public-demo"),output,{recursive:true});
+await cp(resolve(root,"public/styles.css"),resolve(output,"workspace.css"));
+await cp(resolve(root,"public/fonts"),resolve(output,"fonts"),{recursive:true});
+await cp(resolve(root,"public/licenses"),resolve(output,"licenses"),{recursive:true});
+console.log("Built static fictional-data demo:",(await readdir(output)).join(", "));
+console.log("No backend, private seed, account records or database files are bundled.");

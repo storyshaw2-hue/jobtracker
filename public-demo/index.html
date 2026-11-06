@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta name="description" content="Explore a fictional, profession-neutral job-search workspace. Organize roles, stages, notes and next actions in a compact dashboard.">
+  <title>Job Tracker Workspace | Sample Demo</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="./workspace.css">
+  <link rel="stylesheet" href="./demo.css">
+  <script type="module" src="./app.js"></script>
+</head>
+<body class="demo-page">
+  <a class="skip-link" href="#demo-main" data-testid="skip-content">Skip to jobs</a>
+  <header class="top">
+    <div class="shell topbar"><div class="identity"><strong>Job Tracker Workspace</strong><span class="small">Sample demo</span></div><button type="button" id="guideBtn" data-testid="open-guide">How it works</button></div>
+    <div class="shell heading-row"><div><div class="eyebrow">Any career. Your own criteria.</div><h1>Keep your job search together.</h1><p class="muted">Explore roles, track applications, and plan your next move.</p></div><div class="topactions"><button type="button" id="resetBtn" data-testid="reset-demo">Reset demo</button><button type="button" id="exportBtn" class="primary" data-testid="export-csv">Export sample CSV</button></div></div>
+  </header>
+  <main id="demo-main" class="shell" tabindex="-1">
+    <div class="demo-boundary"><strong>Fictional roles only</strong><span>Not live jobs. Changes reset on reload.</span><span>Do not enter personal information.</span></div>
+    <section id="demoKpis" class="kpis" aria-label="Sample workspace shortcuts" data-testid="demo-counts"></section>
+    <section class="toolbar" aria-label="Sample job filters">
+      <div class="toolrow"><input id="demoSearch" type="search" placeholder="Search company, role, or notes" aria-label="Search sample jobs" data-testid="search-jobs"><button type="button" id="demoOptionsBtn" aria-expanded="false" aria-controls="demoSecondaryFilters" data-testid="toggle-filters">Filters &amp; views</button><div id="demoSecondaryFilters" class="demo-secondary"><select id="career" aria-label="Career field" data-testid="filter-career"><option value="">All career fields</option><option>Engineering</option><option>Design</option><option>Operations</option><option>Marketing</option><option>Customer success</option><option>Accounting</option></select><select id="workplace" aria-label="Workplace" data-testid="filter-workplace"><option value="">Any workplace</option><option>Remote</option><option>Hybrid</option><option>On-site</option></select><select id="payFloor" aria-label="Illustrative minimum salary" data-testid="filter-pay"><option value="0">Any sample salary</option><option value="70000">$70,000+ minimum</option><option value="90000">$90,000+ minimum</option><option value="110000">$110,000+ minimum</option></select></div></div>
+      <div class="demo-filter-actions"><select id="demoSort" aria-label="Sort sample jobs" data-testid="sort-jobs"><option value="company">Company A–Z</option><option value="pay">Highest sample minimum</option><option value="role">Role A–Z</option></select><button type="button" id="demoView" data-testid="toggle-view">Table view</button><button type="button" id="clearDemoFilters" data-testid="clear-filters">Clear filters</button></div><p id="filterSummary" class="small" data-testid="filter-summary"></p>
+    </section>
+    <nav class="tabs" role="tablist" aria-label="Demo sections"><button type="button" id="jobsTab" role="tab" data-tab="jobs" aria-selected="true" aria-controls="jobsPanel" data-testid="tab-jobs">Sample jobs</button><button type="button" id="demoPipelineTab" role="tab" data-tab="pipeline" aria-selected="false" aria-controls="demoPipelinePanel" tabindex="-1" data-testid="tab-pipeline">My pipeline</button></nav>
+    <section id="jobsPanel" role="tabpanel" aria-labelledby="jobsTab"><div class="resultline"><strong id="demoResultCount" data-testid="result-count"></strong><span class="small">All salary and requirement details are illustrative.</span></div><div id="demoJobs"></div></section>
+    <section id="demoPipelinePanel" role="tabpanel" aria-labelledby="demoPipelineTab" hidden><div id="demoPipeline"></div></section>
+    <p id="demoFeedback" class="demo-feedback small" role="status" data-testid="demo-feedback">Sample edits stay in this page only.</p>
+    <footer><p>This demo supports multiple professions and work arrangements. It does not search job boards, submit applications, assess your actual resume or predict hiring outcomes.</p><p>No accounts, payments, resume uploads or permanent storage are enabled here. Export a CSV if you want to keep your sample edits.</p><a href="https://github.com/storyshaw2-hue/jobtracker" target="_blank" rel="noopener noreferrer" data-testid="source-code">View the project on GitHub</a></footer>
+  </main>
+  <dialog id="guideDialog" aria-labelledby="guideTitle"><div class="dialoghead"><h2 id="guideTitle">Explore the sample workspace</h2><button type="button" data-close="guideDialog" data-testid="close-guide">Close</button></div><div class="dialogbody"><ol><li>Choose a career field, workplace, or salary filter.</li><li>Open a numbered card to review fictional requirements.</li><li>Change its stage, add a sample note, and check the pipeline.</li><li>Export a CSV to keep those edits.</li></ol><p>Everything here is fictional. Nothing you type is sent to an application backend or saved between visits.</p><p>The full private workspace also supports a Perplexity research handoff and validated imports. Those are not automatic job-search or hiring services.</p></div></dialog>
+  <dialog id="demoResetDialog" aria-labelledby="resetTitle"><div class="dialoghead"><h2 id="resetTitle">Reset sample edits?</h2><button type="button" data-close="demoResetDialog" data-testid="cancel-reset-header">Cancel</button></div><div class="dialogbody"><p>This resets only this page's temporary sample stages, favorites, actions and notes. Export your sample CSV first if you want to keep them.</p></div><div class="dialogfoot"><button type="button" data-close="demoResetDialog" data-testid="cancel-reset">Keep edits</button><button type="button" id="confirmDemoReset" class="primary" data-testid="confirm-reset">Reset sample edits</button></div></dialog>
+  <dialog id="demoExportDialog" aria-labelledby="exportTitle"><div class="dialoghead"><h2 id="exportTitle">Export sample CSV</h2><button type="button" data-close="demoExportDialog" data-testid="close-export">Close</button></div><div class="dialogbody"><p>All six sample roles are included, with your current temporary workflow. Formula-leading text is escaped for spreadsheet safety.</p><label for="demoCsv">Copyable CSV fallback</label><textarea id="demoCsv" readonly rows="12" data-testid="csv-text"></textarea><p id="demoCopyStatus" class="small" role="status" data-testid="copy-status"></p></div><div class="dialogfoot"><button type="button" id="copyDemoCsv" data-testid="copy-csv">Copy CSV</button><button type="button" id="selectDemoCsv" data-testid="select-csv">Select text</button><a class="button primary" id="downloadDemoCsv" download="Job-Tracker-Workspace-Sample.csv" data-testid="download-csv">Download CSV</a></div></dialog>
+</body>
+</html>
