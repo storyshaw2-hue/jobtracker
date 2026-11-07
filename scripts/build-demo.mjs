@@ -9,5 +9,5 @@ for(const file of ["index.html","app.js","model.js","demo.css"]){
 await cp(resolve(root,"public/styles.css"),resolve(output,"workspace.css"));
 await cp(resolve(root,"public/fonts"),resolve(output,"fonts"),{recursive:true});
 await cp(resolve(root,"public/licenses"),resolve(output,"licenses"),{recursive:true});
-console.log("Built static fictional-data demo:",(await readdir(output)).join(", "));
-console.log("No backend, private seed, account records or database files are bundled.");
+console.log("Built real-job frontend:",(await readdir(output)).join(", "));
+console.log("No job fixtures, private seeds, account records or databases are bundled. The read-only feed is a separate API function.");

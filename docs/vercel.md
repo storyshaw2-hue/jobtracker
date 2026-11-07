@@ -1,44 +1,42 @@
-# Vercel deployment
+# Vercel real-job release
 
-This repository contains a private tracker and a separate public sample demo. Vercel must deploy only the sample demo, never the private tracker or its SQLite data.
+Deploy only the public employer-feed frontend and read-only `/api/jobs` function to the independently authorized `job-tracker-workspace` project. The private SQLite tracker, actual resumes and personalized workflow are excluded.
 
-The approved sample is live at [job-tracker-workspace.vercel.app](https://job-tracker-workspace.vercel.app). It was deployed and checked in a fresh browser context on November 6, 2026.
+The production address is [job-tracker-workspace.vercel.app](https://job-tracker-workspace.vercel.app). The real-feed revision is a candidate until release approval and verified deployment; the previous live release was a fictional demonstration.
 
-## Build settings
+## Build and runtime
 
 - **Framework:** Other (`framework: null`).
-- **Install command:** `node --version`, because the demo needs no packages.
-- **Build command:** `node scripts/build-demo.mjs`.
-- **Output directory:** `dist/public-demo`.
-- **Environment variables:** None needed for this sample.
+- **Install:** `node --version`; no runtime packages are required for the public feed.
+- **Build:** `node scripts/build-demo.mjs`.
+- **Static output:** `dist/public-demo`, exactly HTML, app/model JavaScript, two stylesheets, two local fonts and their license.
+- **API:** `api/jobs.mjs` imports `src/live-feed.mjs`, which uses only `node:crypto` and `node:net`.
+- **Function ceiling:** Thirty seconds, allowing the parallel twelve-second source deadlines to resolve as a partial response.
+- **Secrets:** None required by the configured public employer GET endpoints.
+- **Headers:** Same-origin connections, self-only scripts/styles/fonts, denied frames/forms/objects, nosniff and device-permission restrictions.
 
-The root `vercel.json` contains these settings and security headers. `.vercelignore` permits only ten static build-input files during CLI uploads; the build produces eight public assets.
+`.vercelignore` permits twelve exact CLI build-input/config files and rejects private data, private server/app modules, package manifests, validation scripts, fixtures, tests and local Vercel metadata. Git integration can access tracked public repo code; the explicit output and function tracing boundary must therefore also be verified. No filesystem or environment read is in the public function.
 
-## Project boundary
+## Cache and operational limits
 
-Use the independently authorized `job-tracker-workspace` project. Check `.vercel/project.json` before deploying and confirm both the project and workspace association; do not reuse another product's project or overwrite an unrelated local link.
+The service caches each checked snapshot in-process for five minutes and shares in-flight refreshes. Successful responses use a five-minute shared CDN cache with a short stale-revalidation window. Source check timestamps are not rewritten when cached. Failed sources retain only actual last-good data with stale labels; complete failure has a shorter cooldown.
 
-Local `.vercel` metadata is ignored by Git and by deployment uploads. Do not commit tokens, project credentials, `.data`, actual resumes, application notes, databases or the private server.
+Only GET and the canonical query-free endpoint are supported. Query variants return 400 before any employer request. Fixed provider hosts, refused redirects, timeouts, streamed-response limits, record caps and a four-MiB response ceiling bound individual work.
 
-The project is linked to `storyshaw2-hue/jobtracker` with `main` as its production branch. Pushes may trigger publication, so keep unapproved runtime changes on feature branches; do not treat a push to `main` as a preview-only action.
+There is no cross-instance application rate limiter. Cold instances can still call the eight public sources, and anonymous traffic can consume Vercel usage/provider quotas. Account-level firewall, concurrency, spending and billing settings remain unchanged; adding those controls is a separate authorization decision.
 
-## Release checks
+## Project and approval boundary
 
-- **Before upload:** Run `npm run check`, `npm test` and `npm run build:demo`. Inspect the output and confirm that it contains only the demo's HTML, JavaScript, CSS, fonts and license.
-- **Authorization:** Obtain approval for the project, workspace and current production release. Building or pushing code is not permission to update an existing publication.
-- **Deployment:** Deploy the intended linked project in a foreground CLI call, wait for completion, then independently inspect its final deployment status.
-- **Live verification:** Open the returned URL in a fresh browser context. Check the new filters, unknown-value behavior, workflow, actual CSV download, mobile layout and response headers.
+Check `.vercel/project.json` and confirm only `job-tracker-workspace`. Never relink or modify another product's project or ACED resources. Keep tokens and local metadata out of Git and upload output.
 
-The sample's changes live only in browser memory and reset on reload. No customer accounts, payments, permanent storage, actual job search or automated applications are included.
+The project is linked to `storyshaw2-hue/jobtracker`, production branch `main`. Runtime pushes/merges to `main` may publish automatically. Prepare unapproved changes on a feature branch; obtain approval for the current production revision before merging or deploying.
 
-## Verified release
+## Verification
 
-- **Project:** `job-tracker-workspace`, independently created rather than reusing another product's project.
-- **Runtime revision:** `d7d3b5b`.
-- **Deployment:** `dpl_38uayPEirWwnjrzyEPmWJWvsABR8`, production, independently inspected as Ready.
-- **Public address:** [job-tracker-workspace.vercel.app](https://job-tracker-workspace.vercel.app), checked without a signed-in Vercel session.
-- **Coverage:** All 38 non-default filter choices, combinations, chips, quick filters, table/cards, filtered pipeline, sample edits, resets and actual CSV download passed on the live origin.
-- **Boundary:** Actual CSP, nosniff and frame-denial headers were verified. Private seed, local Vercel metadata, private server, package manifest and private health API paths returned 404.
-- **Version integrity:** All eight public assets matched the reviewed local bundle byte-for-byte. Documentation-only commits do not change those served assets.
+1. Run syntax, unit/API tests and both builds. Inspect output and the function import closure.
+2. Review the exact candidate for security and privacy; resolve blocking findings and disclose remaining warnings.
+3. Verify the private preview's actual feed, filters, source links, workflow preservation, CSV, mobile layout and failure states.
+4. After release approval, use the installed Vercel CLI in a fresh foreground call targeting the linked project. Wait for completion and independently inspect final Ready status.
+5. Open the returned site in a fresh anonymous browser. Check actual `/api/jobs`, real source statuses, filters, employer link, CSV and response headers. Check private paths return 404 and assets match the approved candidate.
 
-The earlier pplx.app publication and the personal tracker were not republished by this Vercel release. Future runtime changes still require approval before another production deployment.
+The public feed is not a paid multi-customer service: no accounts, durable public workflow, resume uploads, payment system or automated applications are included. Perplexity matching runs privately on demand through the separate Skill/workspace, not inside Vercel.

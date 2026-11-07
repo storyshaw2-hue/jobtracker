@@ -1,99 +1,88 @@
-# Job Tracker
+# Job Tracker Workspace
 
-A job-search workspace with a private personal tracker, an explicit Perplexity refresh handoff and a separate profession-neutral demonstration. This is the independent `storyshaw2-hue/jobtracker` project, not the ACED repository.
+Real employer job feeds for any profession, plus a separate private, resume-grounded Perplexity research workflow. This is the independent [storyshaw2-hue/jobtracker repository](https://github.com/storyshaw2-hue/jobtracker), not ACED.
 
-Try the [Job Tracker Workspace sample demo on Vercel](https://job-tracker-workspace.vercel.app). It uses fictional roles, resets edits on reload and does not expose private tracker records.
+This branch replaces the earlier fictional public demonstration. The production address is [job-tracker-workspace.vercel.app](https://job-tracker-workspace.vercel.app), but this revision is a release candidate until approved and deployed; the old live version must not be mistaken for the new feed.
 
-## Privacy boundary
+## Real employer discovery
 
-This repository is public, but the working tracker and real data are private. Only synthetic demonstration records are committed. Real research snapshots, application notes, actual resumes, credentials, database files and QA output are excluded from Git and from the static build.
+The browser loads `/api/jobs`, a read-only server function that checks configured Greenhouse, Ashby and Lever employer boards. Sources are explicit in `src/live-feed.mjs`; the interface shows each successful check, failure, last-success timestamp and coverage limit. It is not a search of the entire web.
 
-The app uses server-side SQLite, not browser storage. Export a portable backup before moving environments or rebuilding on another host. A persistent local database is not an independently managed cloud database.
+- **Real records only:** No generated, sample or test job fallback. New private workspaces also start empty.
+- **Evidence:** Employer posting links, check times, stated locations and structured pay accompany each listing. Employer feed inclusion is evidence at that check time, not a guarantee a vacancy stays open.
+- **Filters:** Department, workplace, annual USD minimum, title-derived seniority, job type, sector grouping, stated country, employer, travel cap, stated interview steps, application status, publication date and feed/history state.
+- **Unknowns:** Missing facts remain unknown. Hybrid is not promoted to remote; hourly and non-USD pay do not pass an annual USD floor. No inferred hiring odds or interview speed.
+- **Workflow:** Save roles, update stages, add notes/actions/dates and use cards, table or pipeline. Public workflow stays in the current tab; export CSV before closing or reloading. It is not a durable multi-user account system.
+- **Refresh:** Preserve current tab workflow and retain tracked roles missing from a later feed for rechecking, not automatic closure.
 
-## Run locally
+The adapters follow the public [Greenhouse Job Board API](https://developers.greenhouse.io/job-board.html), [Ashby job posting API](https://developers.ashbyhq.com/docs/public-job-posting-api) and [Lever postings API](https://github.com/lever/postings-api/blob/master/README.md). The interface links to full employer postings instead of republishing complete descriptions.
 
-Requires Node.js 20 or later and npm.
+## Run the real-feed site locally
+
+Requires Node.js 20 or later.
 
 ```sh
 npm ci
+npm run build:demo
+npm run start:feed
+```
+
+Open `http://127.0.0.1:5004`. The historical `build:demo` command and `dist/public-demo` path are retained for deployment compatibility; they now build the real-feed frontend, not a sample dataset. A static file server alone cannot supply `/api/jobs`.
+
+No third-party API key is needed for the configured public GET endpoints. The server has a five-minute in-process cache and shared concurrent refresh; successful Vercel responses also use a five-minute CDN cache. Check timestamps remain visible, including cached/stale records. All-failure checks retry after a shorter cooldown. Unsupported query variants are rejected before upstream work.
+
+Anonymous traffic can still consume hosting usage and provider quotas across cold instances. There is no cross-instance application rate limiter; no account-level security, spending or billing setting is changed by this code.
+
+## Private Perplexity job agent
+
+The supplied Copilot Studio package defines a research contract, not an executable connector runtime. Its equivalent on-demand workflow is the Job Tracker Agent Perplexity Skill, prepared separately for installation in the user's chosen Skill destination.
+
+The agent validates the current profile and actual resume files, searches every configured source or records a failure, verifies exact employer requisitions, deduplicates stable IDs, applies hard filters and documents eight weighted fit components. Scores assess evidence-grounded fit, not the probability of an offer. A public feed refresh is not a private resume match.
+
+1. Configure the private tracker's profile and resume descriptors.
+2. Prepare its Perplexity refresh prompt and request JSON.
+3. Give Perplexity that request and the actual resume documents. Fingerprints and filenames alone are not qualifications.
+4. Validate the returned private snapshot:
+
+   ```sh
+   npm run validate:agent -- --help
+   npm run validate:agent -- --snapshot /private/result.json --request /private/request.json
+   ```
+
+5. Use the authorized same-viewer revision-protected preview/import workflow and verify readback, or import the validated JSON manually if authenticated write access is unavailable. Current user edits and explicit blanks win by default; omitted tracked roles remain in history.
+
+The current contract is in `docs/perplexity-agent-contract.md`. The Skill is not installed merely because its candidate was authored. No background schedule, live Perplexity API subscription, employer outreach or automatic application submission is created.
+
+Reusable Skill source is in `skills/job-tracker-agent/`. New resume descriptors default to the neutral General track; a filename is never treated as evidence of qualifications.
+
+## Private tracker and data boundary
+
+```sh
 npm run build
 npm start
 ```
 
-Open `http://127.0.0.1:5001`. The default is a loopback-only development server with clearly labeled fictional data.
+Open `http://127.0.0.1:5001`. The private app uses SQLite and starts empty without an existing private seed or saved workspace. Put a valid real snapshot in ignored `.data/seed.private.json` before first use, or import through the app. Existing saved workspaces are never replaced because a seed file changes.
 
-To start with real data, place a valid research snapshot at `.data/seed.private.json` before the first run, or import it through the app. Never force-add that file to Git. Existing saved workspaces are not replaced when a seed file changes.
+Private profiles, actual resumes, personalized matches, notes, credentials, database files and QA output stay out of public Git and deployment bundles. Resume contents are supplied directly to Perplexity; the private app stores descriptors only. Test-only fictional fixtures remain for regression tests and are never a runtime fallback.
 
-## Perplexity workflow
+For a private Perplexity preview use `APP_MODE=perplexity`, `HOST=0.0.0.0`, `PORT=5001` behind its authenticated identity proxy. Never expose this mode unprotected. Standalone hosting requires HTTPS, `APP_MODE=standalone`, a configured username and unique password of at least 16 characters, persistent storage and backups. Local SQLite persistence is not independent cloud durability.
 
-- **Search profile & resumes:** Configure eligibility, the posted annual salary floor, titles, sources and scoring weights. The current project-building platform is Perplexity, replacing the user's prior Copilot Studio attribution; employer technology requirements are not rewritten.
-- **Resume descriptors:** Choose files to calculate SHA-256 fingerprints locally. Actual document contents are not uploaded to this app or stored. Supply the actual files directly to Perplexity.
-- **Prepare Perplexity refresh:** Copy the provided instructions and download the request JSON. The request includes prior source URLs, workflow, the output contract and schema.
-- **Import results / backup:** Preview the returned JSON, review conflicts and confirm the import. Current workflow wins by default; tracked omitted jobs remain in history.
-
-No Copilot Studio connector was present in the input package. This is a file-based Perplexity handoff, not an automatic search, API subscription, background automation or application-submission service.
-
-## Improvements
-
-- Fixed dark interface with compact Calibri-first/Carlito typography.
-- Private server-side persistence, clear save/error state and stale-write protection.
-- Actual research-snapshot imports, portable backups and legacy workflow/CSV imports.
-- Explicit import preview and conflict controls, stable-ID migration and retained history.
-- Formula-safe CSV that restores exact multiline and formula-leading values on reimport.
-- Resume fingerprinting with descriptor-only storage and duplicate-file handling.
-- Dated evidence warnings and a clear distinction between fit/readiness labels and hiring probabilities.
-- Browser-safe in-page copy fallbacks and authenticated attachment downloads.
-
-Imported research keeps its original dates and scores. This software upgrade does not recheck listings, silently rescore them or substantiate an 80% offer probability.
-
-## Hosting
-
-### Private Perplexity preview
-
-Run the backend behind the authenticated private proxy with `APP_MODE=perplexity`, `HOST=0.0.0.0` and `PORT=5001`. Deploy only `dist/public`; its backend placeholder is rewritten by Perplexity.
-
-That mode trusts the platform-supplied visitor identity. Never expose it on an unprotected public server.
-
-### Standalone private hosting
-
-Use the Node server with HTTPS in front of it, `APP_MODE=standalone`, `HOST=0.0.0.0`, a configured `APP_BASIC_USER`, and a unique `APP_BASIC_PASSWORD` of at least 16 characters. Mount `.data` on persistent storage and maintain backups. The server refuses weak or missing authentication in standalone mode.
-
-The private static UI alone is not a functional deployment: it requires the backend. This SQLite version is not intended for static GitHub Pages or stateless Vercel hosting without a separate durable backend. The separate fictional-data demo can be hosted statically, as described below.
-
-## Development
+## Development and release
 
 ```sh
-npm run dev
 npm run check
 npm test
 npm run build
-```
-
-Schemas live in `schemas/`; refresh instructions are in `docs/perplexity-agent-contract.md`. `FLOWS.md` documents browser acceptance coverage. CI uses only fictional fixtures and never uploads private data.
-
-Carlito font files are distributed under the included SIL Open Font License.
-
-## Profession-neutral demonstration
-
-`public-demo/` is a separate static, fictional-data demonstration for people across professions. It borrows the supplied reference's navy header, separate summary tiles, company-first numbered cards and badges, while preserving compact dark-mode typography.
-
-The demo includes career, workplace and minimum-salary filters plus seven additional filters: experience level, job type, industry, sample location scope, business travel, sample interview steps and application status. Filters combine with AND logic across cards, table and pipeline; each active filter has a removable chip. Unknown travel or interview values do not qualify for numeric limits, and sample interview steps do not predict turnaround or hiring outcomes.
-
-```sh
 npm run build:demo
-serve dist/public-demo -l 5003 --no-clipboard
 ```
 
-Only `dist/public-demo` is the published sample bundle. It contains no private seed, database, actual resume, personal notes, backend, account system or billing. Sample edits live in page memory, reset on reload and can be exported as escaped CSV. This is not a production multi-customer service.
+CI uses test-only synthetic fixtures and rejects tracked private records/secrets. The additive JSON-schema changes allow unknown pay/posting dates and explicit blank workflow dates without rewriting any existing data or SQL schema.
 
-The expanded demo was deployed at [job-tracker-workspace.vercel.app](https://job-tracker-workspace.vercel.app) on November 6, 2026, and checked on the live origin in a fresh browser context. The earlier [pplx.app demo](https://job-tracker-workspace.pplx.app) remains unchanged; the private tracker remains a separate authenticated preview, and no custom domain was purchased.
+`vercel.json` serves only the built real-feed frontend and `api/jobs.mjs`; that function imports only the feed module and Node built-ins. CLI uploads use a deny-by-default source allowlist. Git builds can see tracked public code, so isolation also relies on the explicit output directory and narrow function import closure, not `.vercelignore` alone.
 
-Building or editing the demo does not publish a new revision. Future publication requires fresh approval for the changed version.
+Use only the already authorized `job-tracker-workspace` Vercel project. Its GitHub production branch is `main`; merging runtime changes can publish immediately. Keep unapproved iterations on a feature branch and obtain release approval before replacing the public site. The earlier pplx.app publication is unchanged unless its replacement is separately authorized.
 
-### Vercel setup
+For an explicitly approved pplx.app backend update, `npm run build:feed-runtime` creates isolated `dist/public-feed-runtime` with only the public modules and assets. Never upload the whole working repository or its `.data` folder as that site's backend project.
 
-`vercel.json` builds only the static demo using Node's built-in modules and serves `dist/public-demo`. No package installation, private server, database or environment secrets are needed. `.vercelignore` is deny-by-default and allows only the exact static build inputs, while local project associations stay out of Git.
-
-Use a separate project named `job-tracker-workspace`, not another product's existing project. The deployment and verification checklist is in [docs/vercel.md](docs/vercel.md).
-
-The Vercel project is linked to this repository with `main` configured as its production branch, so pushes may trigger publication. Keep unapproved runtime changes on feature branches and treat a runtime push to `main` as a production release.
+See [Vercel release checks](docs/vercel.md), [browser acceptance flows](FLOWS.md) and [verification history](docs/verification.md). Carlito fonts use the included SIL Open Font License.

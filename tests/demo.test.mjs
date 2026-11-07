@@ -7,7 +7,7 @@ import {
   SAMPLE_JOBS,
   FILTER_FIELDS,
   FILTER_DEFAULTS,
-} from "../public-demo/model.js";
+} from "./fixtures/legacy-demo-model.mjs";
 test("public demo spans professions and clones only fictional data", () => {
   const a = freshJobs(),
     b = freshJobs();

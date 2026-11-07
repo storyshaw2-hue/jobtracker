@@ -20,3 +20,9 @@ public/fonts/*
 !public/licenses
 public/licenses/*
 !public/licenses/Carlito-OFL.txt
+!api
+api/*
+!api/jobs.mjs
+!src
+src/*
+!src/live-feed.mjs

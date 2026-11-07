@@ -1,0 +1,39 @@
+{
+  "schema_version": "2.0",
+  "generator": "Perplexity",
+  "generated": "2026-11-06",
+  "run_status": "partial",
+  "summary": "No personalized research has run. Configure your profile and supply actual resumes to Perplexity; no example jobs are added.",
+  "counts": { "All": 0 },
+  "profile": {
+    "schemaVersion": "1.0",
+    "version": "1",
+    "name": "My private job search",
+    "location": "Set your eligible work location",
+    "projectPlatform": "Perplexity",
+    "remotePolicy": "any",
+    "salaryFloor": 0,
+    "maxTravelPercent": 100,
+    "postedWithinDays": 30,
+    "minimumScore": 50,
+    "staleAfterDays": 14,
+    "targetTitles": ["Set your target job titles"],
+    "sources": ["Employer ATS"],
+    "weights": { "track": 30, "remote": 20, "seniority": 15, "duties": 10, "qualifications": 10, "salary": 5, "recency": 5, "stability": 5 },
+    "resumes": []
+  },
+  "leads": [],
+  "hidden": [],
+  "archived": [],
+  "research": ["This is an empty workspace template, not a job-search result. Profile values must be configured before personalized research."],
+  "sources": {
+    "searched": [],
+    "unavailable": ["A personalized search has not been requested or run."],
+    "groups": [],
+    "rubric": ["Fit scores require actual resume evidence and are not offer probabilities."],
+    "labels": [],
+    "chance": ["No hiring-probability assessment has been performed."],
+    "urgency": ["Interview speed and hiring urgency require direct evidence."],
+    "filters": []
+  }
+}

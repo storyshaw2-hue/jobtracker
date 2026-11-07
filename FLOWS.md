@@ -71,20 +71,44 @@
 - Open the supplied standalone HTML before editing. Use the patch as a reference, not a command to modify ACED or commit private records.
 - Match the separate summary tiles, navy header, company-first numbered cards, rounded badges and priority corner labels.
 - Preserve dark mode, compact Calibri-first text, accessible controls and all existing profile/import/workflow behavior.
-- Prepare a separate profession-neutral, fictional-data demo. Do not publish it, purchase a domain or expose personal tracker records without approval.
+- The earlier fictional demonstration is superseded by the real-employer-feed correction below. Do not reuse its data or expose personal tracker records.
 
-## Expanded demo filters and Vercel delivery
+## Public filters and Vercel delivery
 
-- Open the existing public demo before editing; confirm six sample roles, career/workplace/pay filters, cards/table, pipeline and exports.
-- Add experience level, employment type, industry, sample location scope, business-travel cap, illustrative interview-step cap and application-stage filters.
+- The existing six-role demo was opened before editing. Replace its data while retaining career/workplace/pay filters, cards/table, pipeline and exports.
+- Include title-level signal, employment type, sector, stated country, business-travel cap, evidenced interview-step cap and application-stage filters.
 - Combine filters with AND logic across cards, table and pipeline. Unknown travel/interview values must not qualify for numeric caps.
 - Show every active filter, including text search, as a removable chip. Clear filters and empty-state recovery must reset every filter.
 - Keep extra filters behind a labeled disclosure. Check open/close state, keyboard access and desktop/mobile/desktop resizing.
-- Preserve stages, favorites, sample notes/actions, reset/cancel, reload-reset behavior, guide, CSV download/copy fallback and the GitHub link.
-- Keep all new values explicitly fictional; interview-step counts are not hiring-time or offer guarantees.
-- Build a static-only Vercel bundle. Exclude private seeds, databases, resumes, notes, the private API and local project credentials.
+- Preserve stages, favorites, tab notes/actions, reset/cancel, disclosed reload-reset behavior, guide, CSV download/copy fallback and the GitHub link.
+- Use actual feed values only; interview-step counts are not hiring-time or offer guarantees.
+- Build the isolated real-feed frontend and read-only API. Exclude private seeds, databases, resumes, notes, the private API and local project credentials.
 - Check the actual Vercel account/project association before any linking. Reuse only the intended jobtracker project, never ACED.
 - The user clarified approval for a new job-tracker-workspace project in the existing workspace. Never reuse or modify aced-vercel, acedhq.com or the ACED repository.
 - After deployment, open the returned Vercel URL in a fresh browser context and recheck filters, one workflow and CSV download.
 - Leave the existing pplx.app publication unchanged unless its updated publication is separately approved.
 - Vercel is linked to this GitHub repository with main as its production branch. Treat runtime pushes to main as production releases; keep unapproved iterations on a feature branch.
+
+## Real jobs and Perplexity agent correction
+
+- Replace the static fictional dataset with actual server-side employer ATS ingestion. Test fixtures must never enter the deployed browser or API bundle.
+- Preserve the dark compact interface, search, filters, cards/table, pipeline, workflow, exports and keyboard/mobile behavior.
+- Show employer posting URLs, provider, real check timestamps and source coverage. Do not equate a source outage with zero jobs or a closed posting.
+- Preserve unknown pay, currency, location restrictions, travel and interview-process facts. No hourly annualization, hybrid-to-remote promotion or invented quick-interview/offer probability.
+- Fetch only allowlisted public employer feeds. Reject unsafe posting URLs, unlisted/prospect posts and malformed upstream data; expose a source ledger and partial/all-failure states.
+- Use stable source IDs and keep user workflow separate from incoming research. Refresh must not overwrite notes/stages or drop a tracked disappeared job.
+- Port the supplied research-agent contract into a private Perplexity Skill for real source verification, actual-resume matching, eight-component scoring, validated output and safe authenticated private import.
+- Validate and ask the required Skill destination before installing it. Do not claim an agent is installed, scheduled or imported until that action is verified.
+- Keep real personal profiles, resume contents, application notes and existing databases off public GitHub and public feeds.
+- Work on feat/real-job-agent, not main. Prepare and test a preview; obtain fresh approval before replacing the public production versions.
+
+## Real-feed QA inventory
+
+- Native employer response: check nonzero actual listings, stable source URLs/timestamps, provider failures and successful-empty source distinction.
+- Exercise every available non-default facet choice, six quick shortcuts, four sorts and AND combinations; compare visible counts to the model over the same actual feed.
+- Check escaped search chips, contradictory-filter empty recovery, pagination, cards/table, details, saved flags, status/date changes, filtered pipeline, notes/actions and refresh preservation.
+- Click actual employer, source-feed and GitHub links. Download real CSV, check formula protection, copy/selection fallback, reset/cancel and disclosed reload reset.
+- Fault-inject total feed failure, recovery, stale rows and missing tracked roles using actual fetched rows; verify no fictional fallback or silent closure.
+- Inspect desktop, 375px mobile, expanded mobile filters/details, short desktop, dialogs, table scrolling, keyboard navigation, fonts and computed contrast.
+- Verify the actual private hosted preview, including opaque-origin behavior and native downloads. Keep all fault fixtures and QA screenshots outside Git/output.
+- New private instances must start with zero jobs. Validate null unknowns, blank dates, actual output consistency and request workflow preservation without changing existing owner records.

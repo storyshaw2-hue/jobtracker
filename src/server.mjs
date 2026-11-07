@@ -65,7 +65,8 @@ export function createApplication({
   if (mode === "standalone" && basicPassword.length < 16) throw new Error("Standalone hosting requires APP_BASIC_PASSWORD with at least 16 characters.");
   if (!seed) {
     const selected = process.env.SEED_FILE ? resolve(root, process.env.SEED_FILE) : resolve(root, ".data/seed.private.json");
-    const path = existsSync(selected) ? selected : resolve(root, "fixtures/demo.snapshot.json");
+    // New workspaces contain no sample jobs. Existing saved workspaces still win.
+    const path = existsSync(selected) ? selected : resolve(root, "fixtures/empty.snapshot.json");
     seed = JSON.parse(readFileSync(path, "utf8"));
   }
   const storage = openStore(databasePath, seed);

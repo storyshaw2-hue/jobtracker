@@ -1,5 +1,24 @@
 # Verification
 
+## Real-feed correction candidate
+
+The `feat/real-job-agent` revision replaces fictional runtime jobs with public employer ATS ingestion and a private Perplexity Skill workflow. The older release notes below are history, not evidence that this new revision has been published or the Skill installed.
+
+- **Automated:** 56 passing unit/API tests, syntax checks and both frontend builds. Additional coverage includes source failures, no fictional fallback, stable workflow refreshes, unknowns, safe URLs, negated screening statements, query rejection, stale-response cache policy, empty private startup and private-agent output validation.
+- **Native source checks:** An initial check returned 804 actual employer listings across eight successful source responses. A later check returned 719 while Spotify timed out; the source ledger correctly reported incomplete coverage and an unknown failed-source count rather than zero results.
+- **Public browser flows:** All 161 non-default facet choices available in the later response, AND combinations, six shortcuts, sorts, chips, escaped search, pagination, cards/table, source details, workflow edits, refresh preservation, pipeline, guide, reset/cancel, copy/select and actual CSV download passed.
+- **Outbound actions:** Actual clicks opened the employer requisition, employer feed and GitHub destination. These checks do not claim every requisition was independently assessed against a resume.
+- **Failure injection:** Using actual fetched rows, total source failure showed zero replacement cards, retry recovered, a missing tracked role retained exact notes, and successfully-checked-only filtering excluded that retained record.
+- **Responsive and accessibility:** Desktop, 375px mobile, expanded mobile filters/details, a 1440×500 short window, horizontal table containment, dialog bounds and keyboard tabs checked. Computed main-view text contrast was at least 6.80:1; fonts remained Calibri-first/Carlito at 12–13.333px.
+- **Private regression smoke:** Under an explicitly isolated QA identity, 35 original leads and 50 hidden records loaded, six views and settings/refresh/import preview worked, an engineering resume descriptor defaulted to General, and note save/reload plus explicit-blank restoration passed. No actual resume was assessed or new personal matching run.
+- **Private preservation:** The ignored private seed's SHA-256 remains `164c270c7930df3c14e28d82e53627b1f07dd7a1da8822b470f7a69bba8bd76f`. No SQL schema migration or owner-workflow write was performed.
+- **Vercel local build:** The explicit static output and one Node API function were generated. Its trace contains only the API/feed modules and runtime configuration, not the private server, data, credentials or resumes; runtime Node 24 and a 30-second ceiling were observed.
+- **Hosted preview:** The actual hosted app returned 804 records and eight successful source checks. All 179 available non-default facet choices passed there, along with save/refresh/pipeline, employer/source clicks, native CSV and 375px width checks. In a genuinely opaque-origin sandboxed iframe, filtering, employer popup, native CSV and the blocked-clipboard manual-selection fallback passed without page errors.
+- **Private hosted read-only check:** The updated original private preview loaded its 35 active cards, Perplexity platform and saved-workspace state without page errors. No hosted private workflow was changed.
+- **Canonical-shell caveat:** Headless navigation to the full Perplexity `/computer/a` shell encountered its Cloudflare check. The returned actual hosted-app URLs were tested directly in fresh normal and opaque contexts; that is not a claim to have cleared the outer shell's bot check.
+- **Exact security recheck:** PASS with no blockers for the eight static assets, isolated eleven-file runtime and three-file Vercel function trace. The only residual warning is publisher traffic/quotas without cross-instance application admission control; Vercel headers must still be checked after an approved production release and are not assumed for the standalone runtime.
+- **Remaining release gates:** Required Skill destination and explicit approval before pushing/merging this revision and replacing live URLs. The Skill is packaged and validated, not installed; no new real-feed production release or background automation has been created.
+
 ## Automated checks
 
 `npm run check`, `npm test`, `npm run build` and `npm run build:demo` pass. The 30 automated tests cover authentication, identity isolation, revision conflicts, authenticated attachments, nonmutating import previews, validation, profile versions, scoring evidence, exact CSV round trips, workflow preservation, stable-ID migration, expanded fictional-demo filters and the static-only Vercel configuration.
