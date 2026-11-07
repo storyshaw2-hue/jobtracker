@@ -281,8 +281,12 @@ async function addResumeFiles(files) {
       const hash = await crypto.subtle.digest("SHA-256", await f.arrayBuffer());
       const sha256 = [...new Uint8Array(hash)].map(b => b.toString(16).padStart(2, "0")).join("");
       if (pendingResumes.some(r => r.sha256 === sha256)) continue;
-      const track = /audit|sox|control/i.test(f.name) ? "Audit / SOX" : /consult|enablement/i.test(f.name) ? "General" : "Accounting";
-      const legacyIndex = pendingResumes.findIndex(r => !r.fileName && r.track === track);
+      const fileKey = f.name.replace(/\.[^.]+$/, "").toLowerCase().replace(/[^a-z0-9]/g, "");
+      const legacyIndex = pendingResumes.findIndex(r => {
+        const aliasKey = r.alias.toLowerCase().replace(/\bresume\b/g, "").replace(/[^a-z0-9]/g, "");
+        return !r.fileName && aliasKey.length >= 6 && fileKey.includes(aliasKey);
+      });
+      const track = legacyIndex >= 0 ? pendingResumes[legacyIndex].track : "General";
       let alias = legacyIndex >= 0 ? pendingResumes[legacyIndex].alias : f.name.replace(/\.[^.]+$/, "");
       if (legacyIndex < 0 && pendingResumes.some(r => r.alias === alias)) alias += ` (${pendingResumes.length + 1})`;
       const descriptor = { id: `resume-${sha256.slice(0, 16)}`, alias, fileName: f.name, size: f.size, mimeType: f.type || "application/octet-stream", lastModified: new Date(f.lastModified).toISOString(), sha256, track, contentStored: false };

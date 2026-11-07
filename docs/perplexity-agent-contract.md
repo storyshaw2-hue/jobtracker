@@ -1,6 +1,6 @@
 # Perplexity refresh contract
 
-The app is a private, dated research workspace. It does not automatically search, submit applications or execute a Microsoft Copilot Studio agent.
+The private app is a dated research workspace; the separate public site reads real employer ATS feeds. Perplexity performs personalized research on demand through the Job Tracker Agent Skill when installed, using the request and actual resume documents. Neither app submits applications or executes Microsoft Copilot Studio.
 
 ## Inputs and platform correction
 
@@ -24,6 +24,10 @@ Do not invent an 80% offer chance, applicant counts, hiring difficulty, urgency 
 
 Return a complete JSON object matching the included `outputSchema`, with `schema_version: "2.0"` and `generator: "Perplexity"`. Set `run_status` to `partial` if any scope remains incomplete, and report source failures.
 
+Include the actual ISO datetime `run_started_at`. Each newly scored lead needs `verification_status: "active"`, current-run `verified_at`, all eight unique `score_components` with the profile's weights, a requirement checklist, and a reconciled final score. If capped, include `score_cap` and `cap_reason`; do not invent a missing numeric cap policy.
+
+Use `sources.ledger` for every configured source. Each entry contains the exact configured `source`, current-run ISO `attempted_at`, and `outcome` of `results`, `zero_qualifying`, `partial`, `blocked`, or `failed`; include evidence URLs and coverage notes. Unknown mandatory facts that the current schema cannot represent belong in a truthful unresolved ledger, not invented pay or posting dates.
+
 Preserve all user workflow by stable ID: status, favorite, notes, next action, due date, contact and applied date. User-entered values, including explicit blanks, override generated defaults.
 
 Do not mark omitted or blocked jobs closed. Archive only after rechecking the original/employer URL and recording the reason and time. Keep tracked omitted jobs as retained history. The app previews the import and preserves current workflow unless the user explicitly chooses to replace conflicts.
@@ -32,4 +36,6 @@ Never include actual resume content, credentials or private authentication token
 
 ## Delivery
 
-Return JSON, not HTML. The user imports the result through the tracker's preview-and-confirm workflow. This file-based handoff does not imply a live Perplexity API integration or a background automation.
+Return JSON, not HTML. Run `node scripts/validate-agent-output.mjs --help`, then validate the private result with `--snapshot PATH --request PATH`. Optional `--resume DESCRIPTOR_ID=PATH` arguments check original bytes against descriptors; validation does not prove external evidence or that resume contents were actually assessed.
+
+When an authorized same-viewer authenticated import is available, read the newest revision, preview the merge, preserve concurrent workflow changes, apply through the supported revision-protected import endpoint, then reread and compare the stored result. Otherwise deliver the validated private JSON and explain the exact import blocker. Do not manufacture authentication or claim an import without readback. This on-demand workflow is not a background schedule or an API subscription.

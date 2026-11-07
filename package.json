@@ -1,16 +1,19 @@
 {
   "name": "jobtracker",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "private": true,
   "type": "module",
-  "description": "Private job-search workspace with a Perplexity refresh handoff.",
+  "description": "Real employer job feeds and a private Perplexity research workspace.",
   "engines": { "node": ">=20" },
   "scripts": {
     "start": "node src/server.mjs",
     "dev": "node --watch src/server.mjs",
     "build": "node scripts/build.mjs",
     "build:demo": "node scripts/build-demo.mjs",
-    "check": "node --check src/server.mjs && node --check src/domain.mjs && node --check public/app.js && node --check public-demo/app.js && node --check public-demo/model.js",
+    "build:feed-runtime": "npm run build:demo && node scripts/build-feed-runtime.mjs",
+    "start:feed": "node --watch src/live-preview-server.mjs",
+    "validate:agent": "node scripts/validate-agent-output.mjs",
+    "check": "node --check src/server.mjs && node --check src/domain.mjs && node --check public/app.js && node --check public-demo/app.js && node --check public-demo/model.js && node --check src/live-feed.mjs && node --check api/jobs.mjs && node --check src/live-preview-server.mjs && node --check scripts/validate-agent-output.mjs",
     "test": "node --test tests/*.test.mjs"
   },
   "dependencies": {

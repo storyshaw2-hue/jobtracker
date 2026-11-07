@@ -1,396 +1,207 @@
-import {
-  freshJobs,
-  selectJobs,
-  sampleCsv,
-  STAGES,
-  FILTER_FIELDS,
-  FILTER_DEFAULTS,
-} from "./model.js";
-const $ = (id) => document.getElementById(id),
-  esc = (s) =>
-    String(s ?? "").replace(
-      /[&<>"']/g,
-      (c) =>
-        ({
-          "&": "&amp;",
-          "<": "&lt;",
-          ">": "&gt;",
-          '"': "&quot;",
-          "'": "&#39;",
-        })[c],
-    );
-let jobs = freshJobs(),
-  state = {
-    ...FILTER_DEFAULTS,
-    sort: "company",
-    view: "cards",
-    tab: "jobs",
-  },
-  downloadUrl;
-const money = (n) =>
-  new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    maximumFractionDigits: 0,
-  }).format(n);
-function card(j, index) {
-  const facts = [
-    ["Experience / job type", `${j.level} · ${j.employment}`],
-    ["Sample industry", j.industry],
-    ["Sample location scope", j.region],
-    [
-      "Business travel",
-      Number.isFinite(j.travelPercent)
-        ? `${j.travelPercent}% or less (sample)`
-        : "Not specified",
-    ],
-    [
-      "Interview process",
-      Number.isFinite(j.interviewSteps)
-        ? `${j.interviewSteps} steps (sample, not a timing guarantee)`
-        : "Not specified",
-    ],
+import {STAGES,FILTER_DEFAULTS,filterFields,selectJobs,mergeFeed,jobsCsv,isTracked} from "./model.js";
+
+const $=id=>document.getElementById(id);
+const esc=value=>String(value??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#39;");
+const dateLabel=value=>value?new Date(value).toLocaleString([],{dateStyle:"medium",timeStyle:"short"}):"Not provided";
+const money=value=>Number.isFinite(value)?new Intl.NumberFormat("en-US",{style:"currency",currency:"USD",maximumFractionDigits:0}).format(value):"Not provided";
+const PAGE_SIZE=30;
+const PORT_BASE="__PORT_5004__";
+const feedUrl=()=>PORT_BASE.startsWith("__PORT_")?"/api/jobs":new URL(`${PORT_BASE}/api/jobs`,document.baseURI).href;
+let jobs=[],snapshot=null,loading=false,feedError="",downloadUrl=null;
+let state={...FILTER_DEFAULTS,sort:"company",view:"cards",tab:"jobs",page:1};
+let fields=filterFields([]);
+
+function showDialog(id){$(id).showModal();}
+function closeDialog(id){$(id).close();}
+function safeUrl(value){try{const u=new URL(value);return u.protocol==="https:"&&!u.username&&!u.password?u.href:null;}catch{return null;}}
+function sourceBadge(j){
+  return j.retained?"Retained for recheck":j.availability==="source_recheck_failed"?"Source recheck failed":"Employer listed";
+}
+function card(j,index){
+  const facts=[
+    ["Structured pay",j.payText||"No structured pay range in this feed; check the full posting"],
+    ["Published location",j.location],
+    ["Workplace evidence",`${j.workplace} · ${j.workplaceBasis}`],
+    ["Job type",j.employment],
+    ["Seniority signal",`${j.level} · ${j.levelBasis}`],
+    ["Employer sector",`${j.industry} · curated grouping`],
+    ["Business travel",Number.isFinite(j.travelPercent)?`${j.travelPercent}% maximum · ${j.travelEvidence}`:"Not specified"],
+    ["Interview steps",Number.isFinite(j.interviewSteps)?`${j.interviewSteps} · ${j.interviewEvidence}`:"Not specified"],
+    ["Last source check",dateLabel(j.checkedAt)],
+    ["Published date",dateLabel(j.postedAt)]
   ];
-  return `
-    <details class="job demo-card ${j.priority ? "priority-job" : ""}" id="demo-${j.id}" data-testid="card-${j.id}">
-      <summary data-testid="expand-${j.id}">
-        ${j.priority ? '<span class="priority-badge">REVIEW FIRST · SAMPLE</span>' : ""}
-        <div class="jobhead">
-          <span class="rank">${String(index + 1).padStart(2, "0")}</span>
-          <div>
-            <div class="title">${esc(j.company)} <span class="company">· ${esc(j.role)}</span></div>
-            <div class="pillrow"><span class="pill">${esc(j.career)}</span><span class="pill">${esc(j.workplace)}</span><span class="pill strong">Fictional sample</span><span class="pill">${esc(j.resume)}</span></div>
-            <div class="meta">Illustrative annual base: ${money(j.min)} to ${money(j.max)}</div>
-            <div class="meta">${esc(j.level)} · ${esc(j.employment)} · ${esc(j.industry)}</div>
-            <div class="meta">${esc(j.location)} · Not a live posting</div>
-          </div>
-          <div class="jobactions">
-            <button type="button" data-favorite="${j.id}" aria-pressed="${j.favorite}" aria-label="${j.favorite ? "Unsave" : "Save"} ${esc(j.company)}" data-testid="favorite-${j.id}">${j.favorite ? "Saved job" : "Save job"}</button>
-            <select data-stage="${j.id}" aria-label="Sample application stage for ${esc(j.company)}" data-testid="stage-${j.id}">${STAGES.map((s) => `<option${s === j.stage ? " selected" : ""}>${s}</option>`).join("")}</select>
-            <button type="button" data-detail="${j.id}" data-testid="details-${j.id}">Sample details</button>
-          </div>
-        </div>
-      </summary>
-      <div class="details">
-        <div class="grid">
-          <div class="fact"><b>Sample duties</b><div>${esc(j.duties)}</div></div>
-          <div class="fact"><b>Workplace / travel</b><div>${esc(j.workplace)} · ${esc(j.travel)}</div></div>
-          <div class="fact"><b>Evidence boundary</b><div>${esc(j.gap)}</div></div>
-        </div>
-        <section class="subpanel"><h2>Illustrative filter values</h2><div class="grid">${facts.map(([label, value]) => `<div class="fact"><b>${esc(label)}</b><div>${esc(value)}</div></div>`).join("")}</div></section>
-        <div class="subpanel"><h2>Illustrative requirements</h2><ul>${j.requirements.map((r) => `<li>${esc(r)}</li>`).join("")}</ul><p class="small">No real resume has been assessed. These are not interview or offer probabilities.</p></div>
-        <div class="subpanel">
-          <h2>Sample application workspace</h2>
-          <div class="workflow">
-            <div class="field"><label for="action-${j.id}">Sample next action</label><input id="action-${j.id}" data-field="nextAction" data-id="${j.id}" maxlength="1500" value="${esc(j.nextAction)}" data-testid="action-${j.id}"></div>
-            <div class="field"><label for="notes-${j.id}">Sample notes only</label><textarea id="notes-${j.id}" data-field="notes" data-id="${j.id}" maxlength="5000" placeholder="Do not enter personal information." data-testid="notes-${j.id}">${esc(j.notes)}</textarea></div>
-          </div>
-        </div>
-      </div>
-    </details>`;
+  return `<details class="job demo-card" id="job-${esc(j.id)}" data-testid="card-${esc(j.id)}">
+    <summary data-testid="expand-${esc(j.id)}"><div class="jobhead"><span class="rank">${String(index+1).padStart(2,"0")}</span><div>
+      <div class="title">${esc(j.company)} <span class="company">· ${esc(j.role)}</span></div>
+      <div class="pillrow"><span class="pill">${esc(j.career)}</span><span class="pill">${esc(j.workplace)}</span><span class="pill ${j.retained?"":"strong"}">${esc(sourceBadge(j))}</span><span class="pill">${esc(j.source)}</span></div>
+      <div class="meta">${esc(j.payText||"Structured pay not provided; check posting")}</div><div class="meta">${esc(j.location)}</div>
+    </div><div class="jobactions"><button data-favorite="${esc(j.id)}" aria-pressed="${j.favorite}" data-testid="favorite-${esc(j.id)}">${j.favorite?"Saved job":"Save job"}</button>
+    <select data-stage="${esc(j.id)}" aria-label="Application stage for ${esc(j.company)}" data-testid="stage-${esc(j.id)}">${STAGES.map(stage=>`<option${stage===j.stage?" selected":""}>${esc(stage)}</option>`).join("")}</select>
+    <a class="button" href="${esc(safeUrl(j.url))}" target="_blank" rel="noopener noreferrer" data-testid="posting-${esc(j.id)}">View employer posting</a></div></div></summary>
+    <div class="details"><section class="subpanel"><h2>Source evidence</h2><div class="grid">${facts.map(([label,value])=>`<div class="fact"><b>${esc(label)}</b><div>${esc(value)}</div></div>`).join("")}</div>
+    ${j.salaryNote?`<p class="small">${esc(j.salaryNote)}</p>`:""}<p class="small">Remote does not mean eligible everywhere. Confirm state/country restrictions, required credentials and the complete description with the employer.</p></section>
+    <section class="subpanel"><h2>Employer excerpt</h2><p class="feed-excerpt">${esc(j.excerpt||"No description excerpt was supplied.")}</p><p class="small">This is an excerpt, not the complete posting. No personal resume match has been assessed here.</p></section>
+    <section class="subpanel"><h2>My application workflow</h2><div class="workflow">
+      <div class="field"><label for="action-${esc(j.id)}">Next action</label><input id="action-${esc(j.id)}" data-field="nextAction" data-id="${esc(j.id)}" maxlength="1500" value="${esc(j.nextAction)}" data-testid="action-${esc(j.id)}"></div>
+      <div class="field"><label for="notes-${esc(j.id)}">Notes in this tab</label><textarea id="notes-${esc(j.id)}" data-field="notes" data-id="${esc(j.id)}" maxlength="5000" data-testid="notes-${esc(j.id)}">${esc(j.notes)}</textarea></div>
+      <div class="field"><label for="applied-${esc(j.id)}">Applied date</label><input type="date" id="applied-${esc(j.id)}" data-field="appliedAt" data-id="${esc(j.id)}" value="${esc(j.appliedAt)}" data-testid="applied-${esc(j.id)}"></div>
+      <div class="field"><label for="followup-${esc(j.id)}">Follow-up date</label><input type="date" id="followup-${esc(j.id)}" data-field="followUpAt" data-id="${esc(j.id)}" value="${esc(j.followUpAt)}" data-testid="followup-${esc(j.id)}"></div>
+    </div></section></div></details>`;
 }
-function activeFilters(counts) {
-  const active = [];
-  if (state.query.trim())
-    active.push({ key: "query", label: `Search: ${state.query.trim()}` });
-  for (const field of FILTER_FIELDS) {
-    if (String(state[field.key]) === (field.default ?? "")) continue;
-    const label = field.options.find(
-      ([value]) => value === String(state[field.key]),
-    )?.[1];
-    if (label)
-      active.push({ key: field.key, label: `${field.label}: ${label}` });
-  }
-  if (state.filter !== "all") {
-    active.push({
-      key: "filter",
-      label: `Shortcut: ${counts.find((c) => c[2] === state.filter)?.[0]}`,
-    });
-  }
-  return active;
-}
-function syncControls() {
-  $("demoSearch").value = state.query;
-  for (const field of FILTER_FIELDS)
-    $(field.key).value = String(state[field.key]);
-}
-function updateDisclosureLabel() {
-  const extra = FILTER_FIELDS.slice(3).filter(
-    (field) => String(state[field.key]) !== (field.default ?? ""),
-  ).length;
-  const open = !$("demoAdvancedFilters").hidden;
-  $("demoMoreFilters").textContent =
-    `${open ? "Hide extra filters" : "More filters"}${extra ? ` · ${extra} active` : ""}`;
-}
-function setExtraFilters(open) {
-  $("demoAdvancedFilters").hidden = !open;
-  $("demoMoreFilters").setAttribute("aria-expanded", String(open));
-  updateDisclosureLabel();
-}
-function render() {
-  const open = [...document.querySelectorAll("details[open]")].map((e) => e.id),
-    items = selectJobs(jobs, state);
-  const counts = [
-    ["All roles", jobs.length, "all"],
-    ["Remote", jobs.filter((j) => j.workplace === "Remote").length, "remote"],
-    ["Review first", jobs.filter((j) => j.priority).length, "priority"],
-    [
-      "Active applications",
-      jobs.filter((j) => ["Applied", "Interviewing", "Offer"].includes(j.stage))
-        .length,
-      "pipeline",
-    ],
-    ["Saved jobs", jobs.filter((j) => j.favorite).length, "favorite"],
-    [
-      "Interviewing",
-      jobs.filter((j) => j.stage === "Interviewing").length,
-      "interviewing",
-    ],
-  ];
-  $("demoKpis").innerHTML = counts
-    .map(
-      ([label, count, key]) =>
-        `<button type="button" class="kpi ${state.filter === key ? "on" : ""}" data-filter="${key}" aria-pressed="${state.filter === key}" data-testid="filter-${key}"><b>${count}</b><span>${label}</span></button>`,
-    )
-    .join("");
-  $("demoResultCount").textContent =
-    `${items.length} of ${jobs.length} sample roles`;
-  const active = activeFilters(counts);
-  $("filterSummary").textContent = active.length
-    ? `${active.length} active filter${active.length === 1 ? "" : "s"}. All conditions must match.`
-    : "All career fields and workplaces";
-  $("demoActiveFilters").innerHTML = active
-    .map(
-      ({ key, label }) =>
-        `<button type="button" class="demo-filter-chip" data-remove-filter="${key}" aria-label="Remove ${esc(label)}" data-testid="remove-filter-${key}">${esc(label)} <span class="demo-chip-clear">Clear</span></button>`,
-    )
-    .join("");
-  $("demoOptionsBtn").textContent =
-    `Filters & views${active.length ? ` (${active.length})` : ""}`;
-  updateDisclosureLabel();
-  $("demoJobs").innerHTML = items.length
-    ? state.view === "cards"
-      ? `<div class="cards">${items.map(card).join("")}</div>`
-      : `<div class="tablewrap"><table class="datatable demo-table"><thead><tr><th>Company / role</th><th>Career</th><th>Workplace</th><th>Illustrative pay</th><th>Stage</th><th>Details</th></tr></thead><tbody>${items.map((j) => `<tr><td><strong>${esc(j.company)}</strong><div>${esc(j.role)}</div></td><td>${esc(j.career)}</td><td>${esc(j.workplace)}</td><td>${money(j.min)} to ${money(j.max)}</td><td>${esc(j.stage)}</td><td><button type="button" data-open="${j.id}" data-testid="table-open-${j.id}">Details</button></td></tr>`).join("")}</tbody></table></div>`
-    : '<div class="empty demo-empty"><p>No sample roles match.</p><p>Try another career field or clear filters.</p><button type="button" data-clear data-testid="empty-clear">Clear filters</button></div>';
-  if (state.tab === "pipeline")
-    $("demoPipeline").innerHTML =
-      `<p class="source-note">Fictional stages and activities. Current filters apply to this pipeline.</p><div class="demo-pipeline">${[
-        "Applied",
-        "Interviewing",
-        "Offer",
-        "Rejected",
-      ]
-        .map(
-          (stage) =>
-            `<section class="column"><h2>${stage} / ${items.filter((j) => j.stage === stage).length}</h2>${
-              items
-                .filter((j) => j.stage === stage)
-                .map(
-                  (j) =>
-                    `<div class="mini"><button type="button" data-open="${j.id}" data-testid="pipeline-open-${j.id}">${esc(j.company)} · ${esc(j.role)}</button><p class="small">${esc(j.nextAction || "No sample action")}</p></div>`,
-                )
-                .join("") || '<p class="small">No samples at this stage.</p>'
-            }</section>`,
-        )
-        .join("")}</div>`;
-  else $("demoPipeline").replaceChildren();
-  open.forEach((id) => {
-    const d = document.getElementById(id);
-    if (d) d.open = true;
-  });
-  $("demoView").textContent =
-    state.view === "cards" ? "Table view" : "Card view";
-  document.querySelectorAll("[data-tab]").forEach((b) => {
-    const on = b.dataset.tab === state.tab;
-    b.setAttribute("aria-selected", String(on));
-    b.tabIndex = on ? 0 : -1;
-  });
-  $("jobsPanel").hidden = state.tab !== "jobs";
-  $("demoPipelinePanel").hidden = state.tab !== "pipeline";
-}
-function clear() {
-  state = {
-    ...state,
-    ...FILTER_DEFAULTS,
-    sort: "company",
-    tab: "jobs",
-  };
-  syncControls();
-  $("demoSort").value = "company";
-  render();
-}
-function openJob(id) {
-  clear();
-  state.view = "cards";
-  render();
-  const d = $("demo-" + id);
-  if (d) {
-    d.open = true;
-    d.scrollIntoView({ block: "start", behavior: "auto" });
+
+function setupFields(){
+  fields=filterFields(jobs);
+  $("advancedFields").innerHTML=fields.slice(3).map(f=>`<div class="demo-filter-field"><label for="${f.key}">${esc(f.label)}</label><select id="${f.key}" data-testid="filter-${f.key}"></select></div>`).join("");
+  for(const f of fields){
+    const control=$(f.key),options=[[f.default??"",f.all],...f.options];
+    if(!options.some(([value])=>String(value)===String(state[f.key])))options.push([state[f.key],state[f.key]]);
+    control.innerHTML=options.map(([value,label])=>`<option value="${esc(value)}">${esc(label)}</option>`).join("");
+    control.value=String(state[f.key]);
+    control.onchange=()=>{state[f.key]=control.value;state.page=1;render();};
   }
 }
-function feedback() {
-  $("demoFeedback").textContent =
-    "Sample edit updated in this page only. Export to keep it; reload resets the demo.";
+function syncControls(){
+  $("demoSearch").value=state.query;
+  for(const f of fields)$(f.key).value=String(state[f.key]);
 }
-document.addEventListener("click", (e) => {
-  const b = e.target.closest("button,a");
-  if (!b) return;
-  if (b.dataset.close) {
-    $(b.dataset.close).close();
-    return;
+function extraFilters(open){
+  $("demoAdvancedFilters").hidden=!open;$("demoMoreFilters").setAttribute("aria-expanded",String(open));
+  disclosureLabel();
+}
+function disclosureLabel(){
+  const active=fields.slice(3).filter(f=>String(state[f.key])!==(f.default??"")).length;
+  $("demoMoreFilters").textContent=($("demoAdvancedFilters").hidden?"More filters":"Hide extra filters")+(active?` · ${active} active`:"");
+}
+function clearFilters(){
+  state={...state,...FILTER_DEFAULTS,sort:"company",page:1};$("demoSort").value="company";syncControls();render();
+}
+function openJob(id){
+  clearFilters();state.tab="jobs";state.view="cards";
+  const index=selectJobs(jobs,state).findIndex(j=>j.id===id);state.page=Math.max(1,Math.floor(index/PAGE_SIZE)+1);
+  render();const detail=$(`job-${id}`);if(detail){detail.open=true;detail.scrollIntoView({block:"start"});}
+}
+function activeFilters(counts){
+  const out=[];
+  if(state.query.trim())out.push({key:"query",label:`Search: ${state.query.trim()}`});
+  for(const f of fields)if(String(state[f.key])!==(f.default??"")){
+    const label=f.options.find(([v])=>String(v)===String(state[f.key]))?.[1]??state[f.key];
+    out.push({key:f.key,label:`${f.label}: ${label}`});
   }
-  if (b.dataset.filter) {
-    state.filter = b.dataset.filter;
-    state.tab = "jobs";
-    render();
-    return;
+  if(state.filter!=="all")out.push({key:"filter",label:`Shortcut: ${counts.find(c=>c[2]===state.filter)?.[0]}`});
+  return out;
+}
+function renderSources(){
+  $("sourceLedger").innerHTML=snapshot?snapshot.sources.map(s=>`<section class="subpanel"><h3>${esc(s.company)} · ${esc(s.provider)}</h3><p><strong>${esc(s.status)}</strong> · ${s.status==="ok"?`${s.count} listings returned${s.excluded?` · ${s.excluded} excluded/unlisted/duplicate`:""}`:s.checkedAt?`${s.count} older listings retained; the latest check failed`:"No successful response; listing count is unknown"}</p><p class="small">Last successful check: ${esc(dateLabel(s.checkedAt))} · Last attempt: ${esc(dateLabel(s.attemptedAt))}${s.error?` · ${esc(s.error)}`:""}</p><a href="${esc(safeUrl(s.url))}" target="_blank" rel="noopener noreferrer" data-testid="source-${esc(s.id)}">Open employer feed</a></section>`).join(""):"The first source check has not completed.";
+}
+function render(){
+  const opened=[...document.querySelectorAll(".demo-card[open]")].map(e=>e.id),items=selectJobs(jobs,state);
+  const counts=[["All roles",jobs.length,"all"],["Remote",jobs.filter(j=>j.workplace==="Remote").length,"remote"],
+    ["Posted salary",jobs.filter(j=>j.payText).length,"salary"],["Active applications",jobs.filter(j=>["Applied","Interviewing","Offer"].includes(j.stage)).length,"pipeline"],
+    ["Saved jobs",jobs.filter(j=>j.favorite).length,"favorite"],["Interviewing",jobs.filter(j=>j.stage==="Interviewing").length,"interviewing"]];
+  $("demoKpis").innerHTML=counts.map(([label,value,key])=>`<button class="kpi ${state.filter===key?"active":""}" data-filter="${key}" aria-pressed="${state.filter===key}" data-testid="quick-${key}"><b>${loading&&!snapshot?"…":value}</b><span>${label}</span></button>`).join("");
+  const active=activeFilters(counts);
+  $("filterSummary").textContent=active.length?`${active.length} active filter${active.length===1?"":"s"}. All conditions must match.`:"All departments, employers and workplaces";
+  $("demoActiveFilters").innerHTML=active.map(({key,label})=>`<button class="demo-filter-chip" data-remove-filter="${key}" aria-label="Remove ${esc(label)}" data-testid="remove-filter-${key}">${esc(label)} <span class="demo-chip-clear">Clear</span></button>`).join("");
+  $("demoOptionsBtn").textContent=`Filters & views${active.length?` (${active.length})`:""}`;disclosureLabel();
+  $("refreshBtn").disabled=loading;$("retryFeed").disabled=loading;$("exportBtn").disabled=!jobs.length;
+  $("feedError").hidden=!feedError;$("feedErrorText").textContent=feedError;
+  if(loading)$("feedStatus").textContent=snapshot?"Rechecking the employer feeds; your current workflow is preserved.":"Connecting to the configured employer ATS feeds…";
+  else if(snapshot){const ok=snapshot.sources.filter(s=>s.status==="ok").length;
+    $("feedStatus").textContent=`${snapshot.jobs.length} employer listings · ${ok}/${snapshot.sources.length} sources checked successfully · ${snapshot.cached?"cached check":"checked"} ${dateLabel(snapshot.checkedAt)}${snapshot.status==="complete"?"":" · Some sources need rechecking"}${snapshot.truncated?" · Feed safety limit reached":""}`;
+  }else $("feedStatus").textContent="No employer feed has been loaded.";
+  for(const [id,tab] of [["jobsTab","jobs"],["demoPipelineTab","pipeline"]]){
+    $(id).setAttribute("aria-selected",String(state.tab===tab));$(id).tabIndex=state.tab===tab?0:-1;
   }
-  if (b.dataset.tab) {
-    state.tab = b.dataset.tab;
-    render();
-    return;
-  }
-  if (Object.hasOwn(FILTER_DEFAULTS, b.dataset.removeFilter)) {
-    const key = b.dataset.removeFilter;
-    state[key] = FILTER_DEFAULTS[key];
-    syncControls();
-    render();
-    return;
-  }
-  if (b.hasAttribute("data-clear")) {
-    clear();
-    return;
-  }
-  if (b.dataset.open) {
-    openJob(b.dataset.open);
-    return;
-  }
-  if (b.dataset.favorite) {
-    e.preventDefault();
-    const j = jobs.find((j) => j.id === b.dataset.favorite);
-    j.favorite = !j.favorite;
-    render();
-    feedback();
-    return;
-  }
-  if (b.dataset.detail) {
-    e.preventDefault();
-    const d = $("demo-" + b.dataset.detail);
-    d.open = !d.open;
-    return;
+  $("jobsPanel").hidden=state.tab!=="jobs";$("pipelinePanel").hidden=state.tab!=="pipeline";
+  $("demoView").textContent=state.view==="cards"?"Table view":"Card view";
+  $("demoResultCount").textContent=loading&&!snapshot?"Loading employer listings…":`${items.length} matching of ${jobs.length} loaded roles`;
+  const pages=Math.max(1,Math.ceil(items.length/PAGE_SIZE));state.page=Math.min(state.page,pages);
+  const start=(state.page-1)*PAGE_SIZE,shown=items.slice(start,start+PAGE_SIZE);
+  if(loading&&!snapshot)$("demoJobList").innerHTML='<div class="empty">Checking actual employer APIs. No replacement listings are generated.</div>';
+  else if(!items.length)$("demoJobList").innerHTML=`<div class="empty"><h2>${feedError&&!jobs.length?"The feed is unavailable":"No roles match these conditions"}</h2><p>${feedError&&!jobs.length?"Check the source ledger or retry the feed.":"Try fewer filters. Missing pay, travel or interview values do not pass a numeric requirement."}</p><button data-clear data-testid="empty-clear">Clear filters</button></div>`;
+  else if(state.view==="cards")$("demoJobList").innerHTML=shown.map((j,i)=>card(j,start+i)).join("");
+  else $("demoJobList").innerHTML=`<div class="tablewrap demo-table-wrap"><table class="datatable demo-table"><thead><tr><th>Employer / role</th><th>Location</th><th>Published pay</th><th>My stage</th><th>Details</th></tr></thead><tbody>${shown.map(j=>`<tr data-testid="row-${esc(j.id)}"><td><strong>${esc(j.company)}</strong><div>${esc(j.role)}</div><span class="small">${esc(sourceBadge(j))}</span></td><td>${esc(j.location)}<div class="small">${esc(j.workplace)}</div></td><td>${esc(j.payText||"Not provided")}</td><td>${esc(j.stage)}</td><td><button data-open="${esc(j.id)}" data-testid="table-open-${esc(j.id)}">Open</button></td></tr>`).join("")}</tbody></table></div>`;
+  for(const id of opened){const el=$(id);if(el)el.open=true;}
+  $("pager").hidden=!items.length||state.tab!=="jobs";$("previousPage").disabled=state.page<=1;$("nextPage").disabled=state.page>=pages;
+  $("pageInfo").textContent=`${start+1}–${start+shown.length} of ${items.length} · Page ${state.page}/${pages}`;
+  $("demoPipeline").innerHTML=`<p class="source-note">Current filters apply. Workflow is private to this tab; export it before reloading.</p><div class="demo-pipeline">${["Applied","Interviewing","Offer","Rejected"].map(stage=>{
+    const stageJobs=items.filter(j=>j.stage===stage);
+    return `<section class="column"><h2>${stage} / ${stageJobs.length}</h2>${stageJobs.map(j=>`<button class="pipeline-card" data-open="${esc(j.id)}" data-testid="pipeline-${esc(j.id)}"><strong>${esc(j.company)}</strong><span>${esc(j.role)}</span><span class="small">${esc(j.nextAction||"Add your next action")}</span>${j.retained?'<span class="small">Retained; availability needs rechecking</span>':""}</button>`).join("")||'<p class="small">No matching roles in this stage.</p>'}</section>`;
+  }).join("")}</div>`;
+  renderSources();
+}
+
+async function loadFeed(){
+  if(loading)return;loading=true;feedError="";render();
+  try{
+    const response=await fetch(feedUrl(),{method:"GET",headers:{Accept:"application/json"},credentials:"omit"});
+    const data=await response.json();
+    if(!response.ok&&!Array.isArray(data.jobs))throw new Error(data.error||"The employer feeds could not be checked.");
+    if(!Array.isArray(data.jobs)||!Array.isArray(data.sources)||data.jobs.some(j=>!j.id||!j.company||!j.role||!safeUrl(j.url)))throw new Error("The feed response did not pass validation.");
+    jobs=mergeFeed(data.jobs,jobs,data.sources);snapshot=data;
+    if(!response.ok||data.status==="unavailable")feedError="No source could be freshly checked. Any older records are clearly marked for rechecking; no fictional replacements are used.";
+    setupFields();state.page=1;
+  }catch(error){
+    feedError=`${error.message} Your existing tab workflow has not been erased.`;
+    jobs=jobs.map(j=>({...j,availability:"source_recheck_failed"}));
+  }finally{loading=false;render();}
+}
+
+document.addEventListener("click",event=>{
+  const b=event.target.closest("button,a");if(!b)return;
+  if(b.dataset.close){closeDialog(b.dataset.close);return;}
+  if(b.dataset.filter){state.filter=b.dataset.filter;state.tab="jobs";state.page=1;render();return;}
+  if(b.dataset.tab){state.tab=b.dataset.tab;render();return;}
+  if(Object.hasOwn(FILTER_DEFAULTS,b.dataset.removeFilter)){const key=b.dataset.removeFilter;state[key]=FILTER_DEFAULTS[key];state.page=1;syncControls();render();return;}
+  if(b.hasAttribute("data-clear")){clearFilters();return;}
+  if(b.dataset.open){openJob(b.dataset.open);return;}
+  if(b.dataset.favorite){
+    event.preventDefault();const job=jobs.find(j=>j.id===b.dataset.favorite);if(!job)return;
+    job.favorite=!job.favorite;if(job.favorite&&job.stage==="Not tracked")job.stage="Saved";render();
   }
 });
-document.addEventListener("change", (e) => {
-  const id = e.target.dataset.stage;
-  if (!id) return;
-  const j = jobs.find((j) => j.id === id);
-  if (STAGES.includes(e.target.value)) {
-    j.stage = e.target.value;
-    render();
-    feedback();
-  }
+document.addEventListener("change",event=>{
+  const id=event.target.dataset.stage;if(!id||!STAGES.includes(event.target.value))return;
+  const job=jobs.find(j=>j.id===id);if(!job)return;job.stage=event.target.value;
+  if(job.stage==="Applied"&&!job.appliedAt){const d=new Date();job.appliedAt=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;}
+  render();
 });
-document.addEventListener("input", (e) => {
-  const { field, id } = e.target.dataset;
-  if (!["notes", "nextAction"].includes(field)) return;
-  const j = jobs.find((j) => j.id === id);
-  if (j) {
-    j[field] = e.target.value;
-    feedback();
-  }
+document.addEventListener("input",event=>{
+  const {field,id}=event.target.dataset;
+  if(!["notes","nextAction","appliedAt","followUpAt"].includes(field))return;
+  const job=jobs.find(j=>j.id===id);if(job)job[field]=event.target.value;
 });
-$("demoSearch").oninput = (e) => {
-  state.query = e.target.value;
-  render();
+$("demoSearch").oninput=e=>{state.query=e.target.value;state.page=1;render();};
+$("demoSort").onchange=e=>{state.sort=e.target.value;state.page=1;render();};
+$("demoView").onclick=()=>{state.view=state.view==="cards"?"table":"cards";render();};
+$("clearDemoFilters").onclick=clearFilters;
+$("demoMoreFilters").onclick=()=>extraFilters($("demoAdvancedFilters").hidden);
+$("demoOptionsBtn").onclick=()=>{
+  const open=$("demoOptionsBtn").getAttribute("aria-expanded")!=="true";
+  $("demoOptionsBtn").setAttribute("aria-expanded",String(open));document.querySelector(".toolbar").classList.toggle("expanded",open);
+  if(matchMedia("(max-width:700px)").matches)extraFilters(open);
 };
-for (const field of FILTER_FIELDS) {
-  const control = $(field.key);
-  control.innerHTML = [[field.default ?? "", field.all], ...field.options]
-    .map(
-      ([value, label]) =>
-        `<option value="${esc(value)}">${esc(label)}</option>`,
-    )
-    .join("");
-  control.onchange = (e) => {
-    state[field.key] = e.target.value;
-    render();
-  };
-}
-$("demoMoreFilters").onclick = () =>
-  setExtraFilters($("demoAdvancedFilters").hidden);
-$("demoSort").onchange = (e) => {
-  state.sort = e.target.value;
-  render();
+$("previousPage").onclick=()=>{state.page=Math.max(1,state.page-1);render();$("demoResultCount").scrollIntoView({block:"start"});};
+$("nextPage").onclick=()=>{state.page++;render();$("demoResultCount").scrollIntoView({block:"start"});};
+$("refreshBtn").onclick=loadFeed;$("retryFeed").onclick=loadFeed;
+$("sourcesBtn").onclick=()=>{renderSources();showDialog("sourcesDialog");};
+$("guideBtn").onclick=()=>showDialog("guideDialog");
+$("resetBtn").onclick=()=>showDialog("resetDialog");
+$("confirmDemoReset").onclick=()=>{jobs=mergeFeed(snapshot?.jobs??[],[],snapshot?.sources??[]);closeDialog("resetDialog");clearFilters();};
+$("exportBtn").onclick=()=>{
+  const csv=jobsCsv(jobs);$("demoCsv").value=csv;$("demoCopyStatus").textContent="";
+  if(downloadUrl)URL.revokeObjectURL(downloadUrl);downloadUrl=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8"}));
+  $("downloadDemoCsv").href=downloadUrl;showDialog("demoExportDialog");
 };
-$("demoView").onclick = () => {
-  state.view = state.view === "cards" ? "table" : "cards";
-  state.tab = "jobs";
-  render();
+$("copyDemoCsv").onclick=async()=>{
+  try{await navigator.clipboard.writeText($("demoCsv").value);$("demoCopyStatus").textContent="CSV copied.";}
+  catch{$("demoCsv").focus();$("demoCsv").select();$("demoCopyStatus").textContent="Clipboard access was blocked. The CSV is selected for manual copying.";}
 };
-$("demoOptionsBtn").onclick = () => {
-  const open = $("demoOptionsBtn").getAttribute("aria-expanded") !== "true";
-  $("demoOptionsBtn").setAttribute("aria-expanded", String(open));
-  document.querySelector(".toolbar").classList.toggle("expanded", open);
-  if (window.matchMedia("(max-width:700px)").matches) setExtraFilters(open);
-};
-$("clearDemoFilters").onclick = clear;
-$("guideBtn").onclick = () => $("guideDialog").showModal();
-$("resetBtn").onclick = () => $("demoResetDialog").showModal();
-$("confirmDemoReset").onclick = () => {
-  jobs = freshJobs();
-  clear();
-  $("demoResetDialog").close();
-  $("demoFeedback").textContent =
-    "Sample workspace reset. Nothing was changed in a private tracker.";
-};
-$("exportBtn").onclick = () => {
-  const csv = sampleCsv(jobs);
-  $("demoCsv").value = csv;
-  $("demoCopyStatus").textContent =
-    "Use Download CSV, or copy the text if your browser blocks downloads.";
-  if (downloadUrl) URL.revokeObjectURL(downloadUrl);
-  downloadUrl = URL.createObjectURL(
-    new Blob([csv], { type: "text/csv;charset=utf-8" }),
-  );
-  $("downloadDemoCsv").href = downloadUrl;
-  $("demoExportDialog").showModal();
-};
-$("copyDemoCsv").onclick = async () => {
-  try {
-    await navigator.clipboard.writeText($("demoCsv").value);
-    $("demoCopyStatus").textContent = "CSV copied.";
-  } catch {
-    $("demoCsv").focus();
-    $("demoCsv").select();
-    $("demoCopyStatus").textContent =
-      "Clipboard access was blocked. The text is selected; copy it manually.";
-  }
-};
-$("selectDemoCsv").onclick = () => {
-  $("demoCsv").focus();
-  $("demoCsv").select();
-  $("demoCopyStatus").textContent =
-    "CSV selected. Copy it with your browser or keyboard.";
-};
-document.addEventListener("keydown", (e) => {
-  if (
-    !e.target.dataset.tab ||
-    !["ArrowLeft", "ArrowRight", "Home", "End"].includes(e.key)
-  )
-    return;
-  e.preventDefault();
-  const tabs = [...document.querySelectorAll("[data-tab]")],
-    i = tabs.indexOf(e.target),
-    next =
-      e.key === "Home"
-        ? 0
-        : e.key === "End"
-          ? tabs.length - 1
-          : (i + (e.key === "ArrowLeft" ? -1 : 1) + tabs.length) % tabs.length;
-  state.tab = tabs[next].dataset.tab;
-  render();
-  tabs[next].focus();
-});
-render();
+$("selectDemoCsv").onclick=()=>{$("demoCsv").focus();$("demoCsv").select();};
+const tabs=[$("jobsTab"),$("demoPipelineTab")];
+tabs.forEach((tab,index)=>tab.addEventListener("keydown",event=>{
+  if(!["ArrowLeft","ArrowRight","Home","End"].includes(event.key))return;
+  event.preventDefault();const next=event.key==="Home"?0:event.key==="End"?tabs.length-1:(index+(event.key==="ArrowLeft"?-1:1)+tabs.length)%tabs.length;
+  tabs[next].click();tabs[next].focus();
+}));
+setupFields();render();loadFeed();

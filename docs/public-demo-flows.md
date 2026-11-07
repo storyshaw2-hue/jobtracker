@@ -1,44 +1,32 @@
-# Public demo acceptance flows
+# Public real-job workspace flows
 
-## Scope
+The historical `public-demo` paths now contain real employer-feed discovery. Test fixtures are excluded, and new private workspaces start empty; this is not an accounting-only product.
 
-This separate static demonstration uses only fictional roles across multiple professions. It does not replace the private tracker, contain the user's research, accept resume uploads, create accounts, take payments or permanently save data.
+## Load and evidence
 
-The working product name is Job Tracker Workspace. The expanded, approved fictional-data demo is at [job-tracker-workspace.vercel.app](https://job-tracker-workspace.vercel.app); the earlier [pplx.app demo](https://job-tracker-workspace.pplx.app) remains a separate unchanged publication.
+- Load actual employer data through `/api/jobs`; show loading, real counts, last-check time and source coverage.
+- Open Sources: inspect successful-empty, successful-populated, failed and stale cases distinctly. Unknown counts are not zero.
+- Click an employer posting and a source-feed link. Verify actual destinations, not just href attributes.
+- Missing salary/currency, country eligibility, travel, interview counts and publication dates remain unknown. Do not substitute fetch time for posting time.
 
-Future changes remain previews until publication is separately approved. The public demo does not authorize publication of the private tracker.
+## Browse and filter
 
-## Browse
+- Exercise every dynamic non-default choice, then clear it. Combine department, remote workplace, annual USD floor and additional facets with AND logic.
+- Check unknown values, contradictory filters, empty recovery and removable chips, including escaped search text.
+- Exercise all six shortcuts, four sorts, previous/next pagination, cards/table and filtered pipeline.
+- Open details, inspect source evidence and employer excerpt, and verify no resume-match claim.
+- Test desktop, 375px mobile, short desktop, keyboard tabs, filter disclosure and desktop/mobile/desktop transitions.
 
-- Open six fictional roles with separate summary tiles and company-first numbered cards.
-- Filter by text, career field, workplace, salary and quick filters; clear an empty result.
-- Sort by company, role or illustrative pay. Toggle cards/table.
-- Open a role's details, change its application stage and edit a sample next action or note.
-- Reload and confirm demo-only changes reset.
+## Workflow and refresh
 
-## Workflow and export
+- Save/unsave a job; update stage, dates, next action and multiline notes. Applied auto-fills a date only if empty.
+- Refresh: preserve exact workflow. Retain a missing tracked role; mark stale sources and exclude them from successfully-checked-only filtering.
+- A missing source response never creates sample jobs or marks a vacancy closed.
+- Open reset, cancel it and verify preservation, then confirm reset and verify only tab workflow cleared.
+- Open guide, GitHub link and export dialog; verify their content and actions.
+- Download real CSV, check source metadata and formula-leading values, exercise copy/selection fallback.
+- Reload and verify the disclosed tab-only reset. No public workflow is persisted or sent to the jobs API.
 
-- Favorite/unfavorite a role and check the saved filter.
-- Open the pipeline and return to job details.
-- Export all current sample workflow as formula-safe CSV; copy/select fallback remains available.
-- Open the demo guide and reset confirmation; cancel must preserve edits.
-- Activate the source-code link with a real click.
+## Release gate
 
-## Safety and appearance
-
-- Explicit fictional-data and session-only notices; no live-availability, automated matching, calibrated odds or billing claims.
-- No network requests carrying notes or profile fields, no cookies/browser storage and no personal-data files.
-- Desktop, 375px mobile, short desktop and 200% reflow. Calibri-first 9–10pt typography, dark navy reference treatment and readable text contrast.
-- No private seed, database, credentials, real employer/job IDs or resume contents in the demo build.
-
-## Expanded filtering
-
-- Open More filters on desktop, or Filters & views on mobile. Check disclosure labels and `aria-expanded` through open/close and resize cycles.
-- Exercise all 38 non-default choices across the ten select filters. Clearing a chip must restore its default control value and matching results.
-- Combine Remote with two interview steps or fewer; only the fictional marketing role matches.
-- Combine Senior and Part-time; show the empty state, then clear all filters.
-- Numeric travel/interview limits must exclude missing values. Not specified must select only missing values, never coerce them to zero.
-- Check that the same conditions apply to cards, table and pipeline. Opening a pipeline/table role returns to its expanded card.
-- Search new screening values, requirements and temporary notes. Render hostile or long query text as text, without script execution or horizontal overflow.
-- Preserve all existing workflow, reset, keyboard tabs, dialogs, exports and source-link behavior.
-- Deploy the Vercel version only to the independently authorized project. Keep the private tracker and existing pplx.app publication separate.
+Use the same private preview asset. Public replacement requires current-revision approval. Keep private data, credentials, private server endpoints and unrelated ACED resources outside this release.
